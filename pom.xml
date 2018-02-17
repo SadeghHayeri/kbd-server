@@ -48,7 +48,7 @@
                 <configuration>
                     <url>http://localhost:8080/manager/text</url>
                     <server>TomcatServer</server>
-                    <path>/mkyongWebApp</path>
+                    <path>/KhaneBeDoosh</path>
                     <uriEncoding>UTF-8</uriEncoding>
                 </configuration>
             </plugin>
