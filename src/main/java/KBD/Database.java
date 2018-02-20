@@ -22,4 +22,10 @@ public class Database {
     public static IndividualUser getUser(int id) {
         return users.get(id);
     }
+
+    public static ArrayList<House> getAllHouses() {
+        ArrayList<House> allHouses = houses;
+        // TODO: fetch real state's houses and add them to list
+        return allHouses;
+    }
 }
