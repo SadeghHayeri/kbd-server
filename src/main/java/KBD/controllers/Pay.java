@@ -16,18 +16,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 @WebServlet("/pay")
 public class Pay extends HttpServlet {
 
     private boolean pay(int userId, float value) {
         try {
-            String bank_url = Config.BANK_URL;
+            String bankUrl = Config.BANK_URL;
             String apiKey = Config.API_KEY;
 
             HttpClient httpClient = HttpClientBuilder.create().build();
-            HttpPost post = new HttpPost(bank_url);
+            HttpPost post = new HttpPost(bankUrl);
 
             JSONObject data = new JSONObject();
             data.put("userId", userId);
