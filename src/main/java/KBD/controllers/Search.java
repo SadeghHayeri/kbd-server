@@ -19,8 +19,8 @@ public class Search extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ArrayList<House> houses = Database.getHouses();
-        request.setAttribute("houses", houses);
 
+        request.setAttribute("houses", houses);
         getServletContext().getRequestDispatcher("/house-list.jsp").forward(request,response);
     }
 }

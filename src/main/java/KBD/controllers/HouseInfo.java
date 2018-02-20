@@ -28,5 +28,8 @@ public class HouseInfo extends HttpServlet {
         String houseId = path[2];
 
         House house = Database.getHouse(houseOwner, houseId);
+
+        request.setAttribute("house", house);
+        getServletContext().getRequestDispatcher("/house-leaf.jsp").forward(request,response);
     }
 }
