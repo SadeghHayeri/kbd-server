@@ -19,12 +19,16 @@
     <br>
 
     <form action="" method="POST">
-        <input type="text">
-        <input type="text">
-        <select name="" id="">
+        <input type="number" name="minimum-area" placeholder="حداقل متراژ">
+        <select name="building-type">
+            <option value="0">ویلایی</option>
+            <option value="1">آپارتمانی</option>
+        </select>
+        <select name="deal-type">
             <option value="0">خرید</option>
             <option value="1">اجاره</option>
         </select>
+        <input type="number" name="maximum-price" placeholder="حداکثر قیمت">
         <input type="submit" value="جست‌و‌جو">
     </form>
 

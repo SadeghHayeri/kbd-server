@@ -34,7 +34,7 @@ public class House {
         this.sellPrice = sellPrice;
         this.phone = phone;
         this.description = description;
-        this.imageURL = Config.getProperty("NO_IMAGE_PATH");
+        this.imageURL = Config.NO_IMAGE_PATH;
     }
 
     public House(int buildingType, int area, String address, float basePrice, float rentPrice, String phone, String description) {
@@ -47,6 +47,6 @@ public class House {
         this.rentPrice = rentPrice;
         this.phone = phone;
         this.description = description;
-        this.imageURL = Config.getProperty("NO_IMAGE_PATH");
+        this.imageURL = Config.NO_IMAGE_PATH;
     }
 }

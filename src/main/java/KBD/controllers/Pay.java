@@ -1,6 +1,13 @@
 package KBD.controllers;
 
 import KBD.models.IndividualUser;
+import KBD.Config;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.json.JSONObject;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -9,14 +16,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 @WebServlet("/pay")
 public class Pay extends HttpServlet {
 
-    protected boolean pay(int userId, float value) {
+    private boolean pay(int userId, float value) {
         try {
-            /*String bank_url = Config.getProperty("BANK_URL");
-            String apiKey = Config.getProperty("API_KEY");
+            String bank_url = Config.BANK_URL;
+            String apiKey = Config.API_KEY;
 
             HttpClient httpClient = HttpClientBuilder.create().build();
             HttpPost post = new HttpPost(bank_url);
@@ -30,7 +38,7 @@ public class Pay extends HttpServlet {
             post.setHeader("Content-type", "application/json");
             post.setHeader("apiKey", apiKey);
 
-            HttpResponse response = httpClient.execute(post);*/
+            HttpResponse response = httpClient.execute(post);
             return true;
         }
         catch (Exception e) {

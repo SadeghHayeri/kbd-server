@@ -1,20 +1,7 @@
 package KBD;
 
-import java.io.FileInputStream;
-import java.util.Properties;
-
 public class Config {
-    static Properties configFile = new Properties();
-
-    static {
-        try {
-            configFile.load(new FileInputStream("../../config.cfg"));
-        }catch(Exception eta){
-            eta.printStackTrace();
-        }
-    }
-
-    public static String getProperty(String key) {
-        return configFile.getProperty(key);
-    }
+    public static final String NO_IMAGE_PATH = "/WEB-INF/assets/no-pic.jpg";
+    public static final String API_KEY = "60ffead0-12e7-11e8-87b4-496f79ef1988";
+    public static final String BANK_URL = "http://acm.ut.ac.ir/ieBank/pay";
 }
