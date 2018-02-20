@@ -1,5 +1,4 @@
-package KBD.services;
-
+package KBD.models.realState;
 
 import KBD.models.House;
 import KBD.models.Logger;
@@ -9,10 +8,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class KhaneBeDoosh extends HouseFetcher {
-
-    protected KhaneBeDoosh(RealStateUser realStateUser) {
-        super(realStateUser);
+public class KhaneBeDoosh extends RealStateUser {
+    public KhaneBeDoosh(String name, String apiAddress) {
+        super(name, apiAddress);
     }
 
     @Override
@@ -37,6 +35,4 @@ public class KhaneBeDoosh extends HouseFetcher {
     protected String getContentType() {
         return "application/json";
     }
-
-
 }

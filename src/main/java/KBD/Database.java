@@ -3,6 +3,7 @@ package KBD;
 import KBD.models.House;
 import KBD.models.IndividualUser;
 import KBD.models.RealStateUser;
+import KBD.models.realState.KhaneBeDoosh;
 
 import java.util.ArrayList;
 
@@ -13,7 +14,7 @@ public class Database {
 
     static {
         users.add(new IndividualUser("بهنام همایون", "behnam_homayoon", "09123456789", 0, "123"));
-        realStateUsers.add(new RealStateUser("khaneBeDoosh", "http://acm.ut.ac.ir/khaneBeDoosh"));
+        realStateUsers.add(new KhaneBeDoosh("khaneBeDoosh", "http://acm.ut.ac.ir/khaneBeDoosh"));
     }
 
     public static void addHouse(House newHouse) {
