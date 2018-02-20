@@ -66,12 +66,37 @@ public class KhaneBeDoosh extends RealStateUser {
     }
 
     @Override
-    protected House parseGetHouseResponse(HttpResponse response) {
-        JSONObject jsonObj = new JSONObject(response.getEntity());
+    protected House parseGetHouseResponse(HttpResponse response) throws IOException {
+        String json = EntityUtils.toString(response.getEntity());
+        JSONObject jsonObj = new JSONObject(json);
 
-        Logger.info(jsonObj.getString("result"));
-
-        return null;
+        JSONObject house = jsonObj.getJSONObject("data");
+        int dealType = house.getInt("dealType");
+        if (dealType == 0)
+            return new House(
+                HouseOwner.KHANE_BE_DOOSH,
+                house.getString("id"),
+                (house.getString("buildingType").equals("آپارتمان") ? BuildingType.APARTMENT : BuildingType.VILLA),
+                house.getInt("area"),
+                house.getString("address"),
+                house.getJSONObject("price").getFloat("sellPrice"),
+                house.getString("phone"),
+                house.getString("description"),
+                house.getString("imageURL")
+            );
+        else
+            return new House(
+                HouseOwner.KHANE_BE_DOOSH,
+                house.getString("id"),
+                (house.getString("buildingType").equals("آپارتمان") ? BuildingType.APARTMENT : BuildingType.VILLA),
+                house.getInt("area"),
+                house.getString("address"),
+                house.getJSONObject("price").getFloat("basePrice"),
+                house.getJSONObject("price").getFloat("rentPrice"),
+                house.getString("phone"),
+                house.getString("description"),
+                house.getString("imageURL")
+            );
     }
 
     @Override
