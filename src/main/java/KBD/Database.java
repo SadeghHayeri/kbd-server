@@ -5,6 +5,7 @@ import KBD.models.IndividualUser;
 import KBD.models.RealStateUser;
 import KBD.models.enums.BuildingType;
 import KBD.models.enums.DealType;
+import KBD.models.realState.KhaneBeDoosh;
 
 import java.util.ArrayList;
 
@@ -15,7 +16,7 @@ public class Database {
 
     static {
         users.add(new IndividualUser("بهنام همایون", "behnam_homayoon", "09123456789", 0, "123"));
-        realStateUsers.add(new RealStateUser("khaneBeDoosh", "http://acm.ut.ac.ir/khaneBeDoosh"));
+        realStateUsers.add(new KhaneBeDoosh("khaneBeDoosh", "http://acm.ut.ac.ir/khaneBeDoosh"));
 
         houses.add(new House(BuildingType.VILLA, 100, "be to che", 1500.5f, "09333564933", "nadare"));
         houses.add(new House(BuildingType.APARTMENT, 102, "address", 100.5f, "09333564933", "nadare"));
