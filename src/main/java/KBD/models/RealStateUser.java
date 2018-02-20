@@ -11,4 +11,12 @@ public class RealStateUser extends User {
         super(name);
         this.apiAddress = apiAddress;
     }
+
+    public String getHouseListApiAddress() {
+        return apiAddress + "/house";
+    }
+
+    public String getHouseApiAddress(int id) {
+        return apiAddress + "/house/" + id;
+    }
 }
