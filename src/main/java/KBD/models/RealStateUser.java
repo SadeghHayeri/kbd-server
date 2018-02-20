@@ -69,7 +69,7 @@ abstract public class RealStateUser extends User {
         return httpClient.execute(get);
     }
 
-    protected abstract ArrayList<House> parseGetHouseListResponse(HttpResponse response);
+    protected abstract ArrayList<House> parseGetHouseListResponse(HttpResponse response) throws IOException;
     protected abstract House parseGetHouseResponse(HttpResponse response);
     protected abstract String getContentType();
 }

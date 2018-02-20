@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <title>Document</title>
+    <title>صفحه‌ اصلی</title>
     <style>
         * {
             direction: rtl;
@@ -18,7 +18,7 @@
 
     <br>
 
-    <form action="" method="POST">
+    <form action="search" method="GET">
         <input type="number" name="minimum-area" placeholder="حداقل متراژ">
         <select name="building-type">
             <option value="0">ویلایی</option>

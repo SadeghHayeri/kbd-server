@@ -2,6 +2,7 @@ package KBD.controllers;
 
 import KBD.Database;
 import KBD.models.House;
+import KBD.models.enums.BuildingType;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -20,7 +21,7 @@ public class AddHouse extends HttpServlet {
         try {
             if (isBuyingHouse)
                 newHouse = new House(
-                        Integer.parseInt(request.getParameter("building-type")),
+                        BuildingType.parseBuildingType(request.getParameter("building-type")),
                         Integer.parseInt(request.getParameter("area")),
                         request.getParameter("address"),
                         Float.parseFloat(request.getParameter("price")),
@@ -29,7 +30,7 @@ public class AddHouse extends HttpServlet {
                 );
             else
                 newHouse = new House(
-                        Integer.parseInt(request.getParameter("building-type")),
+                        BuildingType.parseBuildingType(request.getParameter("building-type")),
                         Integer.parseInt(request.getParameter("area")),
                         request.getParameter("address"),
                         0,

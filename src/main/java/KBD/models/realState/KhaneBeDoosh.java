@@ -3,9 +3,14 @@ package KBD.models.realState;
 import KBD.models.House;
 import KBD.models.Logger;
 import KBD.models.RealStateUser;
+import KBD.models.enums.BuildingType;
+import KBD.models.enums.HouseOwner;
 import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class KhaneBeDoosh extends RealStateUser {
@@ -14,19 +19,57 @@ public class KhaneBeDoosh extends RealStateUser {
     }
 
     @Override
-    protected ArrayList<House> parseGetHouseListResponse(HttpResponse response) {
-        JSONObject jsonObj = new JSONObject(response.getEntity());
+    protected ArrayList<House> parseGetHouseListResponse(HttpResponse response) throws IOException {
+        String json = EntityUtils.toString(response.getEntity());
+        JSONObject jsonObj = new JSONObject(json);
 
-        Logger.info(jsonObj.getString("status"));
+        ArrayList<House> houses = new ArrayList<>();
 
-        return null;
+        JSONArray data = jsonObj.getJSONArray("data");
+        for(Object object:  data){
+            JSONObject house = (JSONObject) object;
+            int dealType = house.getInt("dealType");
+            if (dealType == 0)
+                houses.add(
+                    new House(
+                        HouseOwner.KHANE_BE_DOOSH,
+                        house.getString("id"),
+                        (house.getString("buildingType").equals("آپارتمان") ? BuildingType.APARTMENT : BuildingType.VILLA),
+                        house.getInt("area"),
+                        "",
+                        house.getJSONObject("price").getFloat("sellPrice"),
+                        "",
+                        "",
+                        house.getString("imageURL")
+                    )
+                );
+            else
+                houses.add(
+                    new House(
+                        HouseOwner.KHANE_BE_DOOSH,
+                        house.getString("id"),
+                        (house.getString("buildingType").equals("آپارتمان") ? BuildingType.APARTMENT : BuildingType.VILLA),
+                        house.getInt("area"),
+                        "",
+                        house.getJSONObject("price").getFloat("basePrice"),
+                        house.getJSONObject("price").getFloat("rentPrice"),
+                        "",
+                        "",
+                        house.getString("imageURL")
+                    )
+                );
+        }
+
+        Logger.info(""+ houses.size());
+
+        return houses;
     }
 
     @Override
     protected House parseGetHouseResponse(HttpResponse response) {
         JSONObject jsonObj = new JSONObject(response.getEntity());
 
-        Logger.info(jsonObj.getString("status"));
+        Logger.info(jsonObj.getString("result"));
 
         return null;
     }

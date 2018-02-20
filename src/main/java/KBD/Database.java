@@ -2,6 +2,7 @@ package KBD;
 
 import KBD.models.House;
 import KBD.models.IndividualUser;
+import KBD.models.Logger;
 import KBD.models.RealStateUser;
 import KBD.models.enums.BuildingType;
 import KBD.models.enums.DealType;
