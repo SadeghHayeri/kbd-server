@@ -75,7 +75,10 @@ public class Database {
 
     private static ArrayList<House> getRealStateHouses() {
         ArrayList<House> allHouses = new ArrayList<>();
-        // TODO: fetch real state's houses and add them to list
+
+        for (RealStateUser realStateUser : realStateUsers)
+            allHouses.addAll(realStateUser.getHouses());
+
         return allHouses;
     }
 
