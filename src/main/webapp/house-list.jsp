@@ -21,7 +21,6 @@
 <body>
     <jsp:include page="header.jsp"/>
 
-    <c:out value = "${houses.size()}" />
     <div>
         <c:forEach var="house" items="${houses}">
             <ul>
@@ -39,10 +38,9 @@
                 </li>
             </ul>
             <img src="${house.imageURL}" alt="">
-            <a href="info/${house.owner.toString()}/${house.id}">مشاهده جزئیات</a>
+            <a href="<c:url value="/info/${house.owner.toString()}/${house.id}"/>">مشاهده جزئیات</a>
             <hr>
         </c:forEach>
-
     </div>
 
 </body>

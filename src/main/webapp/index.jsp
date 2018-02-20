@@ -1,3 +1,4 @@
+<%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <!doctype html>
 <html lang="en">
@@ -18,7 +19,7 @@
 
     <br>
 
-    <form action="search" method="GET">
+    <form action="<c:url value="/search"/>" method="GET">
         <input type="number" name="minimum-area" placeholder="حداقل متراژ">
         <select name="building-type">
             <option value="0">ویلایی</option>
@@ -34,7 +35,7 @@
 
     <br/>
 
-    <form action="add-house" method="POST">
+    <form action="<c:url value="/add-house"/>" method="POST">
         <select name="building-type">
             <option value="0">ویلایی</option>
             <option value="1">آپارتمانی</option>
@@ -53,7 +54,7 @@
 
     <br/>
 
-    <form action="pay" method="POST">
+    <form action="<c:url value="/charge"/>" method="POST">
         <input type="number" name="balance-value" placeholder="اعتبار">
         <input type="submit" value="افزایش اعتبار">
     </form>
