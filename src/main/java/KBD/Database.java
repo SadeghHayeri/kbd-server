@@ -6,6 +6,7 @@ import KBD.models.Logger;
 import KBD.models.RealStateUser;
 import KBD.models.enums.BuildingType;
 import KBD.models.enums.DealType;
+import KBD.models.enums.HouseOwner;
 import KBD.models.realState.KhaneBeDoosh;
 
 import java.util.ArrayList;
@@ -66,6 +67,13 @@ public class Database {
         return houses;
     }
 
+    private static House getOwnHouse(String id) {
+        for (House house : houses)
+            if(house.getId().equals(id))
+                return house;
+        return null; //TODO: use exception!
+    }
+
     public static ArrayList<House> getOwnHouses() {
         return houses;
     }
@@ -106,5 +114,18 @@ public class Database {
         }
 
         return result;
+    }
+
+    public static House getHouse(HouseOwner houseOwner, String houseId) {
+        if(houseOwner == HouseOwner.SYSTEM) {
+            return getOwnHouse(houseId);
+        } else {
+            for (RealStateUser realStateUser : realStateUsers) {
+                String realStateName = realStateUser.getName();
+                if(realStateName.equals(houseOwner.toString()))
+                    return realStateUser.getHouse(houseId);
+            }
+        }
+        return null; //TODO: use exception!
     }
 }

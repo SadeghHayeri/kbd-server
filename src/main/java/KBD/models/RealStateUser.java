@@ -24,7 +24,7 @@ abstract public class RealStateUser extends User {
         return apiAddress + "/house";
     }
 
-    public String getHouseApiAddress(int id) {
+    public String getHouseApiAddress(String id) {
         return apiAddress + "/house/" + id;
     }
 
@@ -38,7 +38,7 @@ abstract public class RealStateUser extends User {
         }
     }
 
-    public House getHouse(int id) {
+    public House getHouse(String id) {
         try {
             HttpResponse response = getSingleHouse(id);
             return parseGetHouseResponse(response);
@@ -48,7 +48,7 @@ abstract public class RealStateUser extends User {
         }
     }
 
-    private HttpResponse getSingleHouse(int id) throws IOException {
+    private HttpResponse getSingleHouse(String id) throws IOException {
         String url = getHouseApiAddress(id);
 
         HttpClient httpClient = HttpClientBuilder.create().build();

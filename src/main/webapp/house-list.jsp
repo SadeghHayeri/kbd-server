@@ -39,7 +39,7 @@
                 </li>
             </ul>
             <img src="${house.imageURL}" alt="">
-            <%-- TODO: adding link to house leaf --%>
+            <a href="info/${house.owner.toString()}/${house.id}">مشاهده جزئیات</a>
             <hr>
         </c:forEach>
 
