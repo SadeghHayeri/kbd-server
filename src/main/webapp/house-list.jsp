@@ -22,7 +22,12 @@
     <jsp:include page="header.jsp"/>
 
     <div>
+        تعداد خانه‌های پیدا شده: <c:out value="${houses.size()}"/>
+    </div>
+
+    <div>
         <c:forEach var="house" items="${houses}">
+            <img src="${house.imageURL}" alt=""><br>
             <ul>
                 <c:if test="${house.dealType == DealType.BUY}">
                     <li> قیمت: <c:out value="${house.sellPrice}"/></li>
@@ -37,7 +42,6 @@
                     <c:if test="${house.dealType == DealType.RENTAL}">رهن و اجاره</c:if>
                 </li>
             </ul>
-            <img src="${house.imageURL}" alt="">
             <a href="<c:url value="/info/${house.owner.toString()}/${house.id}"/>">مشاهده جزئیات</a>
             <hr>
         </c:forEach>

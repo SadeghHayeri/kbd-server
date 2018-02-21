@@ -4,7 +4,6 @@ import KBD.Database;
 import KBD.models.House;
 import KBD.models.enums.BuildingType;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;

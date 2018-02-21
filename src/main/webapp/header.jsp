@@ -10,3 +10,5 @@
 <c:if test="${not empty message}">
     <h4><c:out value="${message}"/></h4>
 </c:if>
+
+<hr>

@@ -1,10 +1,8 @@
 package KBD.controllers;
 
-import KBD.Config;
 import KBD.Database;
 import KBD.models.House;
 import KBD.models.IndividualUser;
-import KBD.models.Logger;
 import KBD.models.enums.HouseOwner;
 
 import javax.servlet.ServletException;

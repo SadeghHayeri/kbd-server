@@ -17,8 +17,6 @@
 
     <jsp:include page="header.jsp"/>
 
-    <br>
-
     <form action="<c:url value="/search"/>" method="GET">
         <input type="number" name="minimum-area" placeholder="حداقل متراژ">
         <select name="building-type">
