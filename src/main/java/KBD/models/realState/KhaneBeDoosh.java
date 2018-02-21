@@ -60,8 +60,6 @@ public class KhaneBeDoosh extends RealStateUser {
                 );
         }
 
-        Logger.info(""+ houses.size());
-
         return houses;
     }
 

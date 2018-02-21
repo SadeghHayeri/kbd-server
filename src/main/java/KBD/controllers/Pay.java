@@ -4,6 +4,7 @@ import KBD.Config;
 import KBD.Database;
 import KBD.models.House;
 import KBD.models.IndividualUser;
+import KBD.models.Logger;
 import KBD.models.enums.HouseOwner;
 
 import javax.servlet.ServletException;
@@ -24,7 +25,10 @@ public class Pay extends HttpServlet {
         House house = Database.getHouse(houseOwner, houseId);
 
         if (user.pay(house))
-            request.setAttribute("pay_fail", true);
+            request.setAttribute("message", "مبلغ ۱۰۰۰ تومان برای دریافت شماره‌ی مالک/مشاور از حساب شما کسر شد");
+        else
+            request.setAttribute("message", "اعتبار شما برای دریافت شماره‌ی مالک/مشاور کافی نیست.");
+
         request.setAttribute("house", house);
         getServletContext().getRequestDispatcher("/house-leaf.jsp").forward(request,response);
     }

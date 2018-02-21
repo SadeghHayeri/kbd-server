@@ -20,6 +20,7 @@ public class IndividualUser extends User {
         this.phone = phone;
         this.balance = balance;
         this.password = password;
+        this.paidHouses = new ArrayList<>();
     }
 
     public float getBalance() {
@@ -39,7 +40,7 @@ public class IndividualUser extends User {
     }
 
     public boolean pay(House house) {   //TODO: use exception!
-        if(balance >= Config.HOUSE_OWNER_NUMBER_PRICE)
+        if(balance < Config.HOUSE_OWNER_NUMBER_PRICE)
             return false;
 
         if(hasPaid(house))

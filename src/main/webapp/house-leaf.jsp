@@ -42,12 +42,21 @@
             </c:if>
             <li> آدرس: <c:out value="${house.address}"/></li>
             <li> توضیحات: <c:out value="${house.description}"/></li>
-        </ul
-        <form action="<c:url value="/pay"/>" method="POST">
-            <input type="hidden" name="owner" value="${house.owner.toString()}">
-            <input type="hidden" name="id" value="${house.id}">
-            <input type="submit" value="دریافت شماره‌ی مالک/مشاور">
-        </form>
+        </ul>
+        <c:choose>
+            <c:when test="${not user.hasPaid(house)}">
+                <form action="<c:url value="/pay"/>" method="POST">
+                    <input type="hidden" name="owner" value="${house.owner.toString()}">
+                    <input type="hidden" name="id" value="${house.id}">
+                    <input type="submit" value="دریافت شماره‌ی مالک/مشاور">
+                </form>
+            </c:when>
+            <c:otherwise>
+                <p>
+                     شماره‌ی مالک/مشاور: <c:out value="${house.phone}"/>
+                </p>
+            </c:otherwise>
+        </c:choose>
     </div>
 
 </body>

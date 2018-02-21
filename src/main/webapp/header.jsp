@@ -1,17 +1,12 @@
+<%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
-<%@ page import="KBD.models.IndividualUser" %>
+
 <header>
-    <%
-        IndividualUser user = (IndividualUser) request.getAttribute("user");
-    %>
-    <div> نام کاربر: <%= user.getName()%> </div>
-    <div>اعتبار: <%= user.getBalance()%> تومان </div>
+    <a href="<c:url value="/"/>">خانه</a><br>
+    <div> نام کاربر: <c:out value="${user.name}"/> </div>
+    <div>اعتبار: <c:out value="${user.balance}"/> تومان </div>
 </header>
 
-<%
-    if (request.getAttribute("message") != null) {
-%>
-<h4><%= request.getAttribute("message") %></h4>
-<%
-    }
-%>
+<c:if test="${not empty message}">
+    <h4><c:out value="${message}"/></h4>
+</c:if>

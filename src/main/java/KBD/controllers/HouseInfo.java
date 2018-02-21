@@ -21,7 +21,6 @@ public class HouseInfo extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Logger.info("searched! " + request.getPathInfo());
         String[] path = request.getPathInfo().split("/");
 
         HouseOwner houseOwner = HouseOwner.parseString(path[1]);
