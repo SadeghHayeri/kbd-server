@@ -9,7 +9,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONObject;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -38,7 +37,7 @@ public class Charge extends HttpServlet {
             post.setHeader("apiKey", apiKey);
 
             HttpResponse response = httpClient.execute(post);
-            return true;
+            return (response.getStatusLine().getStatusCode() == Config.SUCCESS_RESPONSE_STATUS_CODE);
         }
         catch (Exception e) {
             return false;
@@ -46,17 +45,20 @@ public class Charge extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        IndividualUser user = (IndividualUser) request.getAttribute("user");
-        float balanceValue = Float.parseFloat(request.getParameter("balance-value"));
+        if (request.getParameter("balance-value").isEmpty()) {
+            request.setAttribute("message", "فیلد اعتبار ضروری است.");
+        } else {
+            IndividualUser user = (IndividualUser) request.getAttribute("user");
+            float balanceValue = Float.parseFloat(request.getParameter("balance-value"));
 
-        if (charge(user.getId(), balanceValue)) {
-            user.addBalance(balanceValue);
-            request.setAttribute("message", "افزایش موجودی با موفقیت انجام شد.");
-        } else
-            request.setAttribute("message", "خطا در افزایش موجودی رخ داد.");
+            if (charge(user.getId(), balanceValue)) {
+                user.addBalance(balanceValue);
+                request.setAttribute("message", "افزایش موجودی با موفقیت انجام شد.");
+            } else
+                request.setAttribute("message", "خطا در افزایش موجودی رخ داد.");
+        }
 
-        RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/index.jsp");
-        dispatcher.forward(request,response);
+        getServletContext().getRequestDispatcher("/index.jsp").forward(request,response);
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {}
