@@ -1,8 +1,8 @@
 package KBD;
 
+import KBD.Exceptions.NotFoundException;
 import KBD.models.House;
 import KBD.models.IndividualUser;
-import KBD.models.Logger;
 import KBD.models.RealStateUser;
 import KBD.models.enums.BuildingType;
 import KBD.models.enums.DealType;
@@ -20,23 +20,15 @@ public class Database {
         users.add(new IndividualUser("بهنام همایون", "behnam_homayoon", "09123456789", 0, "123"));
         realStateUsers.add(new KhaneBeDoosh(HouseOwner.KHANE_BE_DOOSH.toString(), "http://acm.ut.ac.ir/khaneBeDoosh"));
 
-        houses.add(new House(BuildingType.VILLA, 100, "be to che", 1500.5f, "09333564933", "nadare"));
-        houses.add(new House(BuildingType.APARTMENT, 102, "address", 100.5f, "09333564933", "nadare"));
-        houses.add(new House(BuildingType.APARTMENT, 200, "fdsf", 200.5f, "09333564933", "nadare"));
-        houses.add(new House(BuildingType.APARTMENT, 1000, "fsfsfsfsd", 2500.5f, "09333564933", "nadare"));
-        houses.add(new House(BuildingType.VILLA, 50, "kkkk f", 1550.5f, "09333564933", "nadare"));
-        houses.add(new House(BuildingType.VILLA, 200, "rrrr", 1700.5f, "09333564933", "nadare"));
-        houses.add(new House(BuildingType.APARTMENT, 150, "salam", 5000.5f, "09333564933", "nadare"));
-        houses.add(new House(BuildingType.VILLA, 120, "khone", 150.5f, "09333564933", "nadare"));
+        houses.add(new House(BuildingType.VILLA, 100, "be to che", 1500.5f, "09333564931", "nadare"));
+        houses.add(new House(BuildingType.APARTMENT, 102, "address", 100.5f, "09333564932", "nadare"));
+        houses.add(new House(BuildingType.APARTMENT, 1000, "khoone", 2500.5f, "09333564933", "nadare"));
+        houses.add(new House(BuildingType.VILLA, 50, "salam", 1550.5f, "09333564934", "nadare"));
 
-        houses.add(new House(BuildingType.VILLA, 100, "be to che", 1500.5f, 100.5f, "09333564933", "nadare"));
-        houses.add(new House(BuildingType.APARTMENT, 102, "address", 100.5f, 500.5f, "09333564933", "nadare"));
-        houses.add(new House(BuildingType.APARTMENT, 200, "fdsf", 200.5f, 120.5f, "09333564933", "nadare"));
-        houses.add(new House(BuildingType.APARTMENT, 1000, "fsfsfsfsd", 2500.5f, 200.5f, "09333564933", "nadare"));
-        houses.add(new House(BuildingType.VILLA, 50, "kkkk f", 1550.5f, 150.5f, "09333564933", "nadare"));
-        houses.add(new House(BuildingType.VILLA, 200, "rrrr", 1700.5f, 150.5f, "09333564933", "nadare"));
-        houses.add(new House(BuildingType.APARTMENT, 150, "salam", 5000.5f, 500.5f, "09333564933", "nadare"));
-        houses.add(new House(BuildingType.VILLA, 120, "khone", 150.5f, 300.5f, "09333564933", "nadare"));
+        houses.add(new House(BuildingType.VILLA, 100, "be to che", 1500.5f, 100.5f, "09333564931", "nadare"));
+        houses.add(new House(BuildingType.APARTMENT, 102, "address", 100.5f, 500.5f, "09333564932", "nadare"));
+        houses.add(new House(BuildingType.APARTMENT, 1000, "khoone", 2500.5f, 200.5f, "09333564933", "nadare"));
+        houses.add(new House(BuildingType.VILLA, 50, "salam", 1550.5f, 150.5f, "09333564934", "nadare"));
     }
 
     public static void addHouse(House newHouse) {
@@ -61,11 +53,11 @@ public class Database {
         return houses;
     }
 
-    private static House getOwnHouse(String id) {
+    private static House getOwnHouse(String id) throws NotFoundException {
         for (House house : houses)
             if(house.getId().equals(id))
                 return house;
-        return null; //TODO: use exception!
+        throw new NotFoundException("House with id " + id + " not found!");
     }
 
     public static ArrayList<House> getOwnHouses() {
@@ -110,7 +102,7 @@ public class Database {
         return result;
     }
 
-    public static House getHouse(HouseOwner houseOwner, String houseId) {
+    public static House getHouse(HouseOwner houseOwner, String houseId) throws NotFoundException {
         if(houseOwner == HouseOwner.SYSTEM) {
             return getOwnHouse(houseId);
         } else {
@@ -120,6 +112,6 @@ public class Database {
                     return realStateUser.getHouse(houseId);
             }
         }
-        return null; //TODO: use exception!
+        throw new NotFoundException("House with id " + houseId + " not found!");
     }
 }

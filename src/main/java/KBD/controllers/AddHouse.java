@@ -2,6 +2,7 @@ package KBD.controllers;
 
 import KBD.Database;
 import KBD.models.House;
+import KBD.models.Logger;
 import KBD.models.enums.BuildingType;
 
 import javax.servlet.ServletException;
@@ -40,6 +41,7 @@ public class AddHouse extends HttpServlet {
             Database.addHouse(newHouse);
             request.setAttribute("message", "خانه با موفقیت اضافه شد.");
         } catch (Exception e) {
+            Logger.error(e.getMessage());
             request.setAttribute("message", "خطا در ایجاد خانه رخ داد.");
         }
 

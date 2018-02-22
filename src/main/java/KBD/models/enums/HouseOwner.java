@@ -1,5 +1,7 @@
 package KBD.models.enums;
 
+import KBD.Exceptions.NotFoundException;
+
 public enum HouseOwner {
     SYSTEM,
     KHANE_BE_DOOSH;
@@ -11,7 +13,7 @@ public enum HouseOwner {
         else if (this == KHANE_BE_DOOSH)
             return "khane-be-doosh";
         else
-            return null;
+            throw new NotFoundException("House owner not found!");
     }
 
     public static HouseOwner parseString(String owner) {
@@ -20,6 +22,6 @@ public enum HouseOwner {
         else if (owner.equals(KHANE_BE_DOOSH.toString()))
             return KHANE_BE_DOOSH;
         else
-            return null; //TODO: use exceptions!
+            throw new NotFoundException("House owner " + owner + " not found!");
     }
 }

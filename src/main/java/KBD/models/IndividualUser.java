@@ -39,11 +39,11 @@ public class IndividualUser extends User {
         return false;
     }
 
-    public boolean pay(House house) {   //TODO: use exception!
-        if(balance < Config.HOUSE_OWNER_NUMBER_PRICE)
+    public boolean pay(House house) {
+        if(hasPaid(house))
             return false;
 
-        if(hasPaid(house))
+        if(balance < Config.HOUSE_OWNER_NUMBER_PRICE)
             return false;
 
         balance -= Config.HOUSE_OWNER_NUMBER_PRICE;

@@ -2,6 +2,7 @@ package KBD.controllers;
 
 import KBD.models.IndividualUser;
 import KBD.Config;
+import KBD.models.Logger;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -40,6 +41,7 @@ public class Charge extends HttpServlet {
             return (response.getStatusLine().getStatusCode() == Config.SUCCESS_RESPONSE_STATUS_CODE);
         }
         catch (Exception e) {
+            Logger.error(e.getMessage());
             return false;
         }
     }

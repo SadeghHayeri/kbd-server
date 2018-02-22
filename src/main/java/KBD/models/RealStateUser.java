@@ -33,7 +33,7 @@ abstract public class RealStateUser extends User {
             HttpResponse response = getHouseList();
             return parseGetHouseListResponse(response);
         } catch (Exception e) {
-            Logger.info(e.getMessage());
+            Logger.error(e.getMessage());
             return new ArrayList<>();
         }
     }
@@ -43,7 +43,7 @@ abstract public class RealStateUser extends User {
             HttpResponse response = getSingleHouse(id);
             return parseGetHouseResponse(response);
         } catch (Exception e) {
-            Logger.info(e.getMessage());
+            Logger.error(e.getMessage());
             return null;
         }
     }
