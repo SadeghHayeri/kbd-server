@@ -43,14 +43,8 @@ public class Database {
         houses.add(newHouse);
     }
 
-    public static IndividualUser getUser(int id) {
-        return users.get(id);
-    }
-
-    public static ArrayList<House> getAllHouses() {
-        ArrayList<House> allHouses = houses;
-        // TODO: fetch real state's houses and add them to list
-        return allHouses;
+    public static IndividualUser getUser(int index) {
+        return users.get(index);
     }
 
     public static ArrayList<House> getHouses() {

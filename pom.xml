@@ -14,6 +14,17 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
+    <developers>
+        <developer>
+            <name>Mohammad Reza Kiani</name>
+            <email>mohammad.76kiani@gmail.com</email>
+        </developer>
+        <developer>
+            <name>Sadegh Hayeri</name>
+            <email>hayerisadegh@gmail.com</email>
+        </developer>
+    </developers>
+
     <dependencies>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -48,7 +59,6 @@
             <artifactId>jstl</artifactId>
             <version>1.2</version>
         </dependency>
-
 
     </dependencies>
 
