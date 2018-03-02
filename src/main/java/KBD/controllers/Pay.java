@@ -22,6 +22,7 @@ public class Pay extends HttpServlet {
 
         House house = Database.getHouse(houseOwner, houseId);
 
+        //TODO: add 'house payed before exception!' (better error message)
         if (user.pay(house))
             request.setAttribute("message", "مبلغ ۱۰۰۰ تومان برای دریافت شماره‌ی مالک/مشاور از حساب شما کسر شد");
         else
