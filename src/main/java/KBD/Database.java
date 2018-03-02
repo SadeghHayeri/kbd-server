@@ -88,11 +88,8 @@ public class Database {
         for (House house : data) {
             if (house.getBuildingType() == buildingType) {
                 if (house.getArea() >= minimumArea) {
-                    if (house.getDealType() == DealType.BUY) {
+                    if (house.getDealType() == dealType) {
                         if (house.getSellPrice() <= maximumPrice)
-                            result.add(house);
-                    } else if (house.getDealType() == DealType.RENTAL) {
-                        if (house.getRentPrice() <= maximumPrice)
                             result.add(house);
                     }
                 }
