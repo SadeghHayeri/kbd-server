@@ -1,6 +1,6 @@
 package KBD;
 
-import KBD.Exceptions.NotFoundException;
+import KBD.v1.Exceptions.NotFoundException;
 import KBD.models.House;
 import KBD.models.IndividualUser;
 import KBD.models.RealStateUser;

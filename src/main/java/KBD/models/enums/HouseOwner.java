@@ -1,6 +1,6 @@
 package KBD.models.enums;
 
-import KBD.Exceptions.NotFoundException;
+import KBD.v1.Exceptions.NotFoundException;
 
 public enum HouseOwner {
     SYSTEM,

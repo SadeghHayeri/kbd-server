@@ -1,4 +1,4 @@
-package KBD.v1.controllers;
+package KBD.v1.controllers.auth;
 
 import KBD.Database;
 import KBD.models.House;

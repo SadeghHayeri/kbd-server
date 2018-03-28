@@ -1,4 +1,4 @@
-package KBD.v1.controllers;
+package KBD.v1.controllers.house;
 
 import KBD.Database;
 import KBD.models.House;
@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet("/add-house")
-public class AddHouse extends HttpServlet {
+public class Add extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         House newHouse;
         boolean isBuyingHouse = request.getParameter("deal-type").equals("0");

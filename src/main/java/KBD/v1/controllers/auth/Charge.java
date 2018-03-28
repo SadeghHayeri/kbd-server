@@ -1,4 +1,4 @@
-package KBD.v1.controllers;
+package KBD.v1.controllers.auth;
 
 import KBD.models.IndividualUser;
 import KBD.Config;
@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-
 
 @WebServlet("/charge")
 public class Charge extends HttpServlet {

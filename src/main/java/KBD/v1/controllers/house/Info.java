@@ -1,4 +1,4 @@
-package KBD.v1.controllers;
+package KBD.v1.controllers.house;
 
 import KBD.Database;
 import KBD.models.House;
@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet("/info/*")
-public class HouseInfo extends HttpServlet {
+public class Info extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
     }

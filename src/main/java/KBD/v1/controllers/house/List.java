@@ -1,4 +1,4 @@
-package KBD.v1.controllers;
+package KBD.v1.controllers.house;
 
 import KBD.Database;
 import KBD.models.House;
@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 @WebServlet("/search")
-public class Search extends HttpServlet {
+public class List extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
     }
