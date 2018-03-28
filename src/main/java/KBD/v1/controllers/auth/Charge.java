@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet("/charge")
+@WebServlet("/api/v1/auth/charge")
 public class Charge extends HttpServlet {
 
     private boolean charge(int userId, float value) {

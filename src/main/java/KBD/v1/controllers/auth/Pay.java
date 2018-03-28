@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet("/pay")
+@WebServlet("/api/v1/auth/pay")
 public class Pay extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         IndividualUser user = (IndividualUser) request.getAttribute("user");
