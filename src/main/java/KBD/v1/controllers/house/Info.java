@@ -2,17 +2,20 @@ package KBD.v1.controllers.house;
 
 import KBD.Database;
 import KBD.models.House;
+import KBD.models.IndividualUser;
 import KBD.models.enums.HouseOwner;
+import KBD.v1.controllers.BaseHttpServlet;
+import org.json.JSONObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 
-@WebServlet("/info/*")
-public class Info extends HttpServlet {
+@WebServlet("/api/v1/house/*")
+public class Info extends BaseHttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
     }
@@ -24,8 +27,13 @@ public class Info extends HttpServlet {
         String houseId = path[2];
 
         House house = Database.getHouse(houseOwner, houseId);
+        IndividualUser user = (IndividualUser) request.getAttribute("user");
 
-        request.setAttribute("house", house);
-        getServletContext().getRequestDispatcher("/house-leaf.jsp").forward(request,response);
+        java.util.List<String> attributes = Arrays.asList(
+            "id", "owner", "area", "address", "buildingType", "dealType", "imgURL", "description", "price", "phone", "hasBoughtPhone"
+        );
+        JSONObject data = house.toJson(attributes, user);
+
+        sendJsonResponse(response, data);
     }
 }

@@ -9,6 +9,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @WebServlet("/api/v1/auth/profile")
 public class Profile extends BaseHttpServlet {
@@ -19,12 +21,8 @@ public class Profile extends BaseHttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         IndividualUser user = (IndividualUser) request.getAttribute("user");
 
-        JSONObject data = new JSONObject();
-        data.put("id", user.getId());
-        data.put("name", user.getName());
-        data.put("username", user.getUsername());
-        data.put("phone", user.getPhone());
-        data.put("balance", user.getBalance());
+        List<String> attributes = Arrays.asList("id", "name", "username", "phone", "balance");
+        JSONObject data = user.toJson(attributes);
 
         sendJsonResponse(response, data);
     }

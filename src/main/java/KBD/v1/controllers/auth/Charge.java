@@ -3,6 +3,7 @@ package KBD.v1.controllers.auth;
 import KBD.models.IndividualUser;
 import KBD.Config;
 import KBD.models.Logger;
+import KBD.v1.controllers.BaseHttpServlet;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -12,13 +13,16 @@ import org.json.JSONObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 
 @WebServlet("/api/v1/auth/charge")
-public class Charge extends HttpServlet {
+public class Charge extends BaseHttpServlet {
 
     private boolean charge(int userId, float value) {
         try {
@@ -47,20 +51,20 @@ public class Charge extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (request.getParameter("balance-value").isEmpty()) {
-            request.setAttribute("message", "فیلد اعتبار ضروری است.");
-        } else {
-            IndividualUser user = (IndividualUser) request.getAttribute("user");
-            float balanceValue = Float.parseFloat(request.getParameter("balance-value"));
+        IndividualUser user = (IndividualUser) request.getAttribute("user");
+        JSONObject data = parseJsonData(request);
+        List<String> requiredFields = Arrays.asList("balance-value");
+
+        if(jsonValidation(response, data, requiredFields)) {
+            int balanceValue = data.getInt("balance-value");
 
             if (charge(user.getId(), balanceValue)) {
                 user.addBalance(balanceValue);
-                request.setAttribute("message", "افزایش موجودی با موفقیت انجام شد.");
-            } else
-                request.setAttribute("message", "خطا در افزایش موجودی رخ داد.");
+                successResponse(response,"افزایش موجودی با موفقیت انجام شد.");
+            } else {
+                errorResponse(response, HttpServletResponse.SC_SERVICE_UNAVAILABLE, "در حال حاضر سرور بانک در دسترس نمی باشد.");
+            }
         }
-
-        getServletContext().getRequestDispatcher("/index.jsp").forward(request,response);
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {}

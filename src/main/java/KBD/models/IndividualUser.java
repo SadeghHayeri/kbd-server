@@ -1,7 +1,10 @@
 package KBD.models;
 
 import KBD.Config;
+import KBD.v1.services.JSONService;
+import org.json.JSONObject;
 
+import java.util.List;
 import java.util.ArrayList;
 
 /**
@@ -55,8 +58,19 @@ public class IndividualUser extends User {
             return false;
 
         balance -= Config.HOUSE_OWNER_NUMBER_PRICE;
-        paidHouses.add(new PaidHouse(house.getOwner(), house.getId()));
+        house.getImageURL();
+//        paidHouses.add(new PaidHouse(house.getOwner(), house.getId()));
+//        return true;
         return true;
     }
 
+    public JSONObject toJson (List<String> keys) {
+        JSONObject data = super.toJson(keys);
+        data.put("username", username);
+        data.put("phone", phone);
+        data.put("balance", balance);
+
+        data = JSONService.keepAllowedKeys(data, keys);
+        return data;
+    }
 }

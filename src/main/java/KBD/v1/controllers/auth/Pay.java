@@ -4,32 +4,53 @@ import KBD.Database;
 import KBD.models.House;
 import KBD.models.IndividualUser;
 import KBD.models.enums.HouseOwner;
+import KBD.v1.Exceptions.NotFoundException;
+import KBD.v1.controllers.BaseHttpServlet;
+import org.json.JSONObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @WebServlet("/api/v1/auth/pay")
-public class Pay extends HttpServlet {
+public class Pay extends BaseHttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         IndividualUser user = (IndividualUser) request.getAttribute("user");
+        JSONObject data = parseJsonData(request);
+        List<String> requiredFields = Arrays.asList("owner", "id");
 
-        HouseOwner houseOwner = HouseOwner.parseString(request.getParameter("owner"));
-        String houseId = request.getParameter("id");
+        if(jsonValidation(response, data, requiredFields)) {
 
-        House house = Database.getHouse(houseOwner, houseId);
+            HouseOwner houseOwner;
+            try {
+                houseOwner = HouseOwner.parseString(data.getString("owner"));
+            } catch (NotFoundException e) {
+                errorResponse(response, HttpServletResponse.SC_NOT_FOUND, "مالک این خانه در سیستم وجود ندارد.");
+                return;
+            }
 
-        //TODO: add 'house payed before exception!' (better error message)
-        if (user.pay(house))
-            request.setAttribute("message", "مبلغ ۱۰۰۰ تومان برای دریافت شماره‌ی مالک/مشاور از حساب شما کسر شد");
-        else
-            request.setAttribute("message", "اعتبار شما برای دریافت شماره‌ی مالک/مشاور کافی نیست.");
+            String houseId = data.getString("id");
 
-        request.setAttribute("house", house);
-        getServletContext().getRequestDispatcher("/house-leaf.jsp").forward(request,response);
+            House house;
+            try {
+                house = Database.getHouse(houseOwner, houseId);
+            } catch (NotFoundException e) {
+                errorResponse(response, HttpServletResponse.SC_NOT_FOUND, "این خانه وجود ندارد.");
+                return;
+            }
+
+            if(user.hasPaid(house)) {
+                errorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "شما قبلا این پرداخت را انجام داده‌اید.");
+            } else if (user.pay(house)) {
+                successResponse(response, "مبلغ ۱۰۰۰ تومان برای دریافت شماره مالک/مشاور از حساب شما کسر شد");
+            } else {
+                errorResponse(response, HttpServletResponse.SC_PAYMENT_REQUIRED, "اعتبار شما برای دریافت شماره مالک/مشاور کافی نیست.");
+            }
+        }
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
