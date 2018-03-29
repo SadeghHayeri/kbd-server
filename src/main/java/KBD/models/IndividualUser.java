@@ -13,11 +13,11 @@ import java.util.ArrayList;
 public class IndividualUser extends User {
     private String username;
     private String phone;
-    private float balance;
+    private int balance;
     private String password;
     private ArrayList<PaidHouse> paidHouses;
 
-    public IndividualUser(String name, String username, String phone, float balance, String password) {
+    public IndividualUser(String name, String username, String phone, int balance, String password) {
         super(name);
         this.username = username;
         this.phone = phone;
@@ -26,7 +26,7 @@ public class IndividualUser extends User {
         this.paidHouses = new ArrayList<>();
     }
 
-    public float getBalance() {
+    public int getBalance() {
         return balance;
     }
 
@@ -38,7 +38,7 @@ public class IndividualUser extends User {
         return phone;
     }
 
-    public void addBalance(float balanceValue) {
+    public void addBalance(int balanceValue) {
         balance += balanceValue;
     }
 

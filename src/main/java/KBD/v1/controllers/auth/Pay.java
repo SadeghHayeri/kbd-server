@@ -41,7 +41,7 @@ public class Pay extends BaseHttpServlet {
             return;
         }
 
-        if(user.hasPaid(house)) {
+        if (user.hasPaid(house)) {
             errorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "شما قبلا این پرداخت را انجام داده‌اید.");
         } else if (user.pay(house)) {
             successResponse(response, "مبلغ ۱۰۰۰ تومان برای دریافت شماره مالک/مشاور از حساب شما کسر شد");
