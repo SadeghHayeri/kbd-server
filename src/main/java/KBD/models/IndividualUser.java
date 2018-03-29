@@ -27,6 +27,14 @@ public class IndividualUser extends User {
         return balance;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
     public void addBalance(float balanceValue) {
         balance += balanceValue;
     }
