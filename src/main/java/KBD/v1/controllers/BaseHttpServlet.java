@@ -1,5 +1,6 @@
 package KBD.v1.controllers;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.servlet.http.HttpServlet;
@@ -14,4 +15,9 @@ public class BaseHttpServlet extends HttpServlet {
         response.getWriter().print(json.toString());
     }
 
+    protected void sendJsonResponse(HttpServletResponse response, JSONArray json) throws IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().print(json.toString());
+    }
 }

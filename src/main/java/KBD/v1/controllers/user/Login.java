@@ -1,4 +1,4 @@
-package KBD.v1.controllers.auth;
+package KBD.v1.controllers.user;
 
 import KBD.Database;
 import KBD.models.IndividualUser;
@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet("/api/v1/auth/login")
+@WebServlet("/api/v1/login")
 public class Login extends BaseHttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         IndividualUser user = Database.getUser(0);
