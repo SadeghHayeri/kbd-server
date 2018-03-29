@@ -1,6 +1,7 @@
 package KBD.v1.filters;
 
 import org.json.JSONObject;
+import org.json.JSONException;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -30,6 +31,17 @@ public class ExceptionHandler implements Filter {
             JSONObject json = new JSONObject();
             json.put("code", HttpServletResponse.SC_BAD_REQUEST);
             String message = "مورد نیاز است " + e.getMessage() + " فیلد";
+            json.put("message", message);
+
+            response.getWriter().print(json.toString());
+        } catch (JSONException e) {
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+
+            JSONObject json = new JSONObject();
+            json.put("code", HttpServletResponse.SC_BAD_REQUEST);
+            String message = "خطا در فرمت JSON ارسالی.";
             json.put("message", message);
 
             response.getWriter().print(json.toString());
