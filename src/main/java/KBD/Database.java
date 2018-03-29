@@ -20,15 +20,15 @@ public class Database {
         users.add(new IndividualUser("بهنام همایون", "behnam_homayoon", "09123456789", 0, "123"));
         realStateUsers.add(new KhaneBeDoosh(HouseOwner.KHANE_BE_DOOSH.toString(), "http://acm.ut.ac.ir/khaneBeDoosh"));
 
-        houses.add(new House(BuildingType.VILLA, 100, "be to che", 1500.5f, "09333564931", "nadare"));
-        houses.add(new House(BuildingType.APARTMENT, 102, "address", 100.5f, "09333564932", "nadare"));
-        houses.add(new House(BuildingType.APARTMENT, 1000, "khoone", 2500.5f, "09333564933", "nadare"));
-        houses.add(new House(BuildingType.VILLA, 50, "salam", 1550.5f, "09333564934", "nadare"));
+        houses.add(new House(BuildingType.VILLA, 100, "be to che", 1500, "09333564931", "nadare"));
+        houses.add(new House(BuildingType.APARTMENT, 102, "address", 100, "09333564932", "nadare"));
+        houses.add(new House(BuildingType.APARTMENT, 1000, "khoone", 2500, "09333564933", "nadare"));
+        houses.add(new House(BuildingType.VILLA, 50, "salam", 1550, "09333564934", "nadare"));
 
-        houses.add(new House(BuildingType.VILLA, 100, "be to che", 1500.5f, 100.5f, "09333564931", "nadare"));
-        houses.add(new House(BuildingType.APARTMENT, 102, "address", 100.5f, 500.5f, "09333564932", "nadare"));
-        houses.add(new House(BuildingType.APARTMENT, 1000, "khoone", 2500.5f, 200.5f, "09333564933", "nadare"));
-        houses.add(new House(BuildingType.VILLA, 50, "salam", 1550.5f, 150.5f, "09333564934", "nadare"));
+        houses.add(new House(BuildingType.VILLA, 100, "be to che", 1500, 100, "09333564931", "nadare"));
+        houses.add(new House(BuildingType.APARTMENT, 102, "address", 100, 500, "09333564932", "nadare"));
+        houses.add(new House(BuildingType.APARTMENT, 1000, "khoone", 2500, 200, "09333564933", "nadare"));
+        houses.add(new House(BuildingType.VILLA, 50, "salam", 1550, 150, "09333564934", "nadare"));
     }
 
     public static void addHouse(House newHouse) {

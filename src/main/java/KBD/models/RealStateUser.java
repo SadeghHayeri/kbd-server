@@ -1,6 +1,7 @@
 package KBD.models;
 
 
+import KBD.v1.Exceptions.NotFoundException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -44,7 +45,7 @@ abstract public class RealStateUser extends User {
             return parseGetHouseResponse(response);
         } catch (Exception e) {
             Logger.error(e.getMessage());
-            return null;
+            throw new NotFoundException("realstate bad response, House not found!");
         }
     }
 

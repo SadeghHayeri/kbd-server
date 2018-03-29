@@ -25,15 +25,15 @@ public class House {
     private String address;
     private String imageURL;
     private DealType dealType;
-    private float basePrice;
-    private float rentPrice;
-    private float sellPrice;
+    private int basePrice;
+    private int rentPrice;
+    private int sellPrice;
     private String phone;
     private String description;
     private String expireTime;
     private HouseOwner owner;
 
-    public House(BuildingType buildingType, int area, String address, float sellPrice, String phone, String description) {
+    public House(BuildingType buildingType, int area, String address, int sellPrice, String phone, String description) {
         this.dealType = DealType.BUY;
 
         this.owner = HouseOwner.SYSTEM;
@@ -47,7 +47,7 @@ public class House {
         this.imageURL = Config.NO_IMAGE_PATH;
     }
 
-    public House(HouseOwner owner, String id, BuildingType buildingType, int area, String address, float sellPrice, String phone, String description, String imageURL) {
+    public House(HouseOwner owner, String id, BuildingType buildingType, int area, String address, int sellPrice, String phone, String description, String imageURL) {
         this.dealType = DealType.BUY;
 
         this.owner = owner;
@@ -61,7 +61,7 @@ public class House {
         this.imageURL = imageURL;
     }
 
-    public House(BuildingType buildingType, int area, String address, float basePrice, float rentPrice, String phone, String description) {
+    public House(BuildingType buildingType, int area, String address, int basePrice, int rentPrice, String phone, String description) {
         this.dealType = DealType.RENTAL;
 
         this.owner = HouseOwner.SYSTEM;
@@ -76,7 +76,7 @@ public class House {
         this.imageURL = Config.NO_IMAGE_PATH;
     }
 
-    public House(HouseOwner owner, String id, BuildingType buildingType, int area, String address, float basePrice, float rentPrice, String phone, String description, String imageURL) {
+    public House(HouseOwner owner, String id, BuildingType buildingType, int area, String address, int basePrice, int rentPrice, String phone, String description, String imageURL) {
         this.dealType = DealType.RENTAL;
 
         this.owner = owner;
@@ -115,15 +115,15 @@ public class House {
         return dealType;
     }
 
-    public float getBasePrice() {
+    public int getBasePrice() {
         return basePrice;
     }
 
-    public float getRentPrice() {
+    public int getRentPrice() {
         return rentPrice;
     }
 
-    public float getSellPrice() {
+    public int getSellPrice() {
         return sellPrice;
     }
 

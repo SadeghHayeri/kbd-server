@@ -58,9 +58,8 @@ public class IndividualUser extends User {
             return false;
 
         balance -= Config.HOUSE_OWNER_NUMBER_PRICE;
-        house.getImageURL();
-//        paidHouses.add(new PaidHouse(house.getOwner(), house.getId()));
-//        return true;
+        paidHouses.add(new PaidHouse(house.getOwner(), house.getId()));
+
         return true;
     }
 

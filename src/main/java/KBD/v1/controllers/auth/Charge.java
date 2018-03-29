@@ -53,17 +53,15 @@ public class Charge extends BaseHttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         IndividualUser user = (IndividualUser) request.getAttribute("user");
         JSONObject data = parseJsonData(request);
-        List<String> requiredFields = Arrays.asList("balance-value");
+        jsonValidation(data, Arrays.asList("balance-value"));
 
-        if(jsonValidation(response, data, requiredFields)) {
-            int balanceValue = data.getInt("balance-value");
+        int balanceValue = data.getInt("balance-value");
 
-            if (charge(user.getId(), balanceValue)) {
-                user.addBalance(balanceValue);
-                successResponse(response,"افزایش موجودی با موفقیت انجام شد.");
-            } else {
-                errorResponse(response, HttpServletResponse.SC_SERVICE_UNAVAILABLE, "در حال حاضر سرور بانک در دسترس نمی باشد.");
-            }
+        if (charge(user.getId(), balanceValue)) {
+            user.addBalance(balanceValue);
+            successResponse(response,"افزایش موجودی با موفقیت انجام شد.");
+        } else {
+            errorResponse(response, HttpServletResponse.SC_SERVICE_UNAVAILABLE, "در حال حاضر سرور بانک در دسترس نمی باشد.");
         }
     }
 

@@ -1,10 +1,13 @@
 package KBD.v1.filters;
 
-import KBD.v1.Exceptions.NotFoundException;
-import KBD.models.Logger;
+import org.json.JSONObject;
+
+import javax.servlet.http.HttpServletResponse;
+
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 @WebFilter("/*")
@@ -15,14 +18,21 @@ public class ExceptionHandler implements Filter {
     }
 
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws ServletException, IOException {
+        HttpServletResponse response = (HttpServletResponse) resp;
+
         try {
             chain.doFilter(req, resp);
-        } catch (NotFoundException e) {
-            Logger.error(e.getMessage());
+        } catch (FileNotFoundException e) {
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
-            req.setAttribute("message", "صفحه مورد نظر یافت نشد.");
+            JSONObject json = new JSONObject();
+            json.put("code", HttpServletResponse.SC_BAD_REQUEST);
+            String message = "مورد نیاز است " + e.getMessage() + " فیلد";
+            json.put("message", message);
 
-            filterConfig.getServletContext().getRequestDispatcher("/404.jsp").forward(req, resp);
+            response.getWriter().print(json.toString());
         }
     }
 

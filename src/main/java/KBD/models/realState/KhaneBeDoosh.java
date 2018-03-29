@@ -36,7 +36,7 @@ public class KhaneBeDoosh extends RealStateUser {
                         (house.getString("buildingType").equals("آپارتمان") ? BuildingType.APARTMENT : BuildingType.VILLA),
                         house.getInt("area"),
                         "",
-                        house.getJSONObject("price").getFloat("sellPrice"),
+                        house.getJSONObject("price").getInt("sellPrice"),
                         "",
                         "",
                         house.getString("imageURL")
@@ -50,8 +50,8 @@ public class KhaneBeDoosh extends RealStateUser {
                         (house.getString("buildingType").equals("آپارتمان") ? BuildingType.APARTMENT : BuildingType.VILLA),
                         house.getInt("area"),
                         "",
-                        house.getJSONObject("price").getFloat("basePrice"),
-                        house.getJSONObject("price").getFloat("rentPrice"),
+                        house.getJSONObject("price").getInt("basePrice"),
+                        house.getJSONObject("price").getInt("rentPrice"),
                         "",
                         "",
                         house.getString("imageURL")
@@ -76,7 +76,7 @@ public class KhaneBeDoosh extends RealStateUser {
                 (house.getString("buildingType").equals("آپارتمان") ? BuildingType.APARTMENT : BuildingType.VILLA),
                 house.getInt("area"),
                 house.getString("address"),
-                house.getJSONObject("price").getFloat("sellPrice"),
+                house.getJSONObject("price").getInt("sellPrice"),
                 house.getString("phone"),
                 house.getString("description"),
                 house.getString("imageURL")
@@ -88,8 +88,8 @@ public class KhaneBeDoosh extends RealStateUser {
                 (house.getString("buildingType").equals("آپارتمان") ? BuildingType.APARTMENT : BuildingType.VILLA),
                 house.getInt("area"),
                 house.getString("address"),
-                house.getJSONObject("price").getFloat("basePrice"),
-                house.getJSONObject("price").getFloat("rentPrice"),
+                house.getJSONObject("price").getInt("basePrice"),
+                house.getJSONObject("price").getInt("rentPrice"),
                 house.getString("phone"),
                 house.getString("description"),
                 house.getString("imageURL")

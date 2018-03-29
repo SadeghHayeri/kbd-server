@@ -22,35 +22,40 @@ public class Main extends BaseHttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         JSONObject data = parseJsonData(request);
         java.util.List<String> requiredFields = Arrays.asList(
-                "building-type", "deal-type", "area", "address", "phone", "description",
-                "buy-price" ,"base-price", "rent-price"
+                "building-type", "deal-type", "area", "address", "phone", "description", "price"
         );
+        jsonValidation(data, requiredFields);
 
-        if(jsonValidation(response, data, requiredFields)) {
-            House newHouse;
-            boolean isBuyingHouse = data.getString("deal-type").equals("0");
-            if (isBuyingHouse)
-                newHouse = new House(
-                        BuildingType.parseBuildingType(data.getString("building-type")),
-                        data.getInt("area"),
-                        data.getString("address"),
-                        Float.parseFloat(data.getString("buy-price")),
-                        data.getString("phone"),
-                        data.getString("description")
-                );
-            else
-                newHouse = new House(
-                        BuildingType.parseBuildingType(data.getString("building-type")),
-                        data.getInt("area"),
-                        data.getString("address"),
-                        Float.parseFloat(data.getString("base-price")),
-                        Float.parseFloat(data.getString("rent-price")),
-                        data.getString("phone"),
-                        data.getString("description")
-                );
-            Database.addHouse(newHouse);
-            successResponse(response, "خانه با موفقیت اضافه شد.");
+        House newHouse;
+        boolean isBuyingHouse = data.getString("deal-type").equals("0");
+        JSONObject priceData = data.getJSONObject("price");
+        if (isBuyingHouse) {
+            jsonValidation(priceData, Arrays.asList("buy"));
+
+            newHouse = new House(
+                BuildingType.parseBuildingType(data.getString("building-type")),
+                data.getInt("area"),
+                data.getString("address"),
+                priceData.getInt("buy"),
+                data.getString("phone"),
+                data.getString("description")
+            );
+        } else {
+            jsonValidation(data.getJSONObject("price"), Arrays.asList("base", "rent"));
+
+            newHouse = new House(
+                BuildingType.parseBuildingType(data.getString("building-type")),
+                data.getInt("area"),
+                data.getString("address"),
+                priceData.getInt("base"),
+                priceData.getInt("rent"),
+                data.getString("phone"),
+                data.getString("description")
+            );
         }
+
+        Database.addHouse(newHouse);
+        successResponse(response, "خانه با موفقیت اضافه شد.");
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
