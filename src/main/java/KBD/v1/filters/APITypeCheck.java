@@ -25,10 +25,10 @@ public class APITypeCheck implements Filter {
         else {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
 
             JSONObject json = new JSONObject();
-            json.put("code", HttpServletResponse.SC_BAD_REQUEST);
+            json.put("code", HttpServletResponse.SC_NOT_IMPLEMENTED);
             String message = "در حال حاضر فقط فرمت JSON پشتیبانی می شود.";
             json.put("message", message);
 
