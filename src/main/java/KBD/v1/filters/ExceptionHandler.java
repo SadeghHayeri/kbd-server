@@ -11,7 +11,7 @@ import javax.servlet.annotation.WebFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-@WebFilter("/*")
+@WebFilter("/api/v1/*")
 public class ExceptionHandler implements Filter {
     private FilterConfig filterConfig;
 

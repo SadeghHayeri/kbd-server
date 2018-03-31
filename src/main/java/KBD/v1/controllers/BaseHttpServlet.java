@@ -11,6 +11,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
+import static KBD.Config.ARRAY_TYPE_DEFAULT_NAME;
+
 public class BaseHttpServlet extends HttpServlet {
 
     protected JSONObject parseJsonData(HttpServletRequest request) throws IOException {
@@ -27,13 +29,22 @@ public class BaseHttpServlet extends HttpServlet {
     protected void sendJsonResponse(HttpServletResponse response, JSONObject json) throws IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
+        if(!json.has("code"))
+            json.put("code", HttpServletResponse.SC_OK);
         response.getWriter().print(json.toString());
     }
 
-    protected void sendJsonResponse(HttpServletResponse response, JSONArray json) throws IOException {
+    protected void sendJsonResponse(HttpServletResponse response, JSONArray json, String name) throws IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().print(json.toString());
+
+        JSONObject finalResponse = new JSONObject();
+        finalResponse.put(name, json);
+        sendJsonResponse(response, finalResponse);
+    }
+
+    protected void sendJsonResponse(HttpServletResponse response, JSONArray json) throws IOException {
+        sendJsonResponse(response, json, ARRAY_TYPE_DEFAULT_NAME);
     }
 
     protected void successResponse(HttpServletResponse response, String message) throws IOException {

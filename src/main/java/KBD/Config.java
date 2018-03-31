@@ -6,4 +6,5 @@ public class Config {
     public static final String BANK_URL = "http://acm.ut.ac.ir/ieBank/pay";
     public static final int HOUSE_OWNER_NUMBER_PRICE = 1000;
     public static final int SUCCESS_RESPONSE_STATUS_CODE = 200;
+    public static final String ARRAY_TYPE_DEFAULT_NAME = "data";
 }

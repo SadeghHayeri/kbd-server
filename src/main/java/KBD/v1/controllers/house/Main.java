@@ -81,6 +81,6 @@ public class Main extends BaseHttpServlet {
             data.put(jsonHouse);
         }
 
-        sendJsonResponse(response, data);
+        sendJsonResponse(response, data, "houses");
     }
 }
