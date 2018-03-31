@@ -41,36 +41,45 @@ public class FieldsFilter implements Filter {
         if(fields == null) {
             chain.doFilter(req, resp);
         } else {
-            CharResponseWrapper responseWrapper = new CharResponseWrapper(response);
-            chain.doFilter(req, responseWrapper);
+            try {
+                CharResponseWrapper responseWrapper = new CharResponseWrapper(response);
+                chain.doFilter(req, responseWrapper);
 
-            List<String> items = Arrays.asList(fields.split("\\s*,\\s*"));
+                List<String> items = Arrays.asList(fields.split("\\s*,\\s*"));
 
-            JSONObject realResponse = new JSONObject(responseWrapper.toString());
-            JSONObject targetResponse = new JSONObject();
-            if(realResponse.length() == 2) {    //code + array
+                JSONObject realResponse = new JSONObject(responseWrapper.toString());
+                JSONObject targetResponse = new JSONObject();
+                if(realResponse.length() == 2 && !realResponse.has("message")) {    //code + array //TODO: clean this plz :/
 
-                // get key!
-                Iterator<String> keys = realResponse.keys();
-                String key = keys.next();
-                if(key.equals("code"))
-                    key = keys.next();
+                    // get key!
+                    Iterator<String> keys = realResponse.keys();
+                    String key = keys.next();
+                    if(key.equals("code"))
+                        key = keys.next();
 
-                JSONArray realArray = realResponse.getJSONArray(key);
+                    JSONArray realArray = realResponse.getJSONArray(key);
 
-                JSONArray targetArray = new JSONArray();
-                for (int i = 0; i < realArray.length(); i++) {
-                    JSONObject realItem = realArray.getJSONObject(i);
-                    JSONObject filteredItem = JSONService.keepAllowedKeys(realItem, items);
+                    JSONArray targetArray = new JSONArray();
+                    for (int i = 0; i < realArray.length(); i++) {
+                        JSONObject realItem = realArray.getJSONObject(i);
+                        JSONObject filteredItem = JSONService.keepAllowedKeys(realItem, items);
 //
-                    targetArray.put(filteredItem);
+                        targetArray.put(filteredItem);
+                    }
+                    targetResponse.put(key, targetArray);
+                } else {
+                    targetResponse = JSONService.keepAllowedKeys(realResponse, items);
                 }
-                targetResponse.put(key, targetArray);
-            } else {
-                targetResponse = JSONService.keepAllowedKeys(realResponse, items);
-            }
 
-            response.getWriter().write(targetResponse.toString());
+                response.getWriter().write(targetResponse.toString());
+            } catch (Exception e) {
+                JSONObject data = new JSONObject();
+                data.put("code", HttpServletResponse.SC_NOT_IMPLEMENTED);
+                data.put("message", "خطای سیستمی: این نوع پارامترها پشتیبانی نمی شوند.");
+
+                response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
+                response.getWriter().write(data.toString());
+            }
         }
     }
 
