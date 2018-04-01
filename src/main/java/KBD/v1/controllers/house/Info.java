@@ -29,21 +29,27 @@ public class Info extends BaseHttpServlet {
             return;
         }
 
-        HouseOwner houseOwner = HouseOwner.parseString(path[1]);
-        String houseId = path[2];
-
+        //TODO: Use multiple exceptions!
         try {
-            House house = Database.getHouse(houseOwner, houseId);
-            IndividualUser user = (IndividualUser) request.getAttribute("user");
+            HouseOwner houseOwner = HouseOwner.parseString(path[1]);
+            String houseId = path[2];
 
-            java.util.List<String> attributes = Arrays.asList(
-                    "id", "owner", "area", "address", "buildingType", "dealType", "imgURL", "description", "price", "phone", "hasBoughtPhone"
-            );
-            JSONObject data = house.toJson(attributes, user);
+            try {
+                House house = Database.getHouse(houseOwner, houseId);
+                IndividualUser user = (IndividualUser) request.getAttribute("user");
 
-            sendJsonResponse(response, data);
+                java.util.List<String> attributes = Arrays.asList(
+                        "id", "owner", "area", "address", "buildingType", "dealType", "imgURL", "description", "price", "phone", "hasBoughtPhone"
+                );
+                JSONObject data = house.toJson(attributes, user);
+
+                sendJsonResponse(response, data);
+            } catch (NotFoundException e) {
+                errorResponse(response, HttpServletResponse.SC_NOT_FOUND, "این خانه وجود ندارد.");
+            }
+
         } catch (NotFoundException e) {
-            errorResponse(response, HttpServletResponse.SC_NOT_FOUND, "این خانه وجود ندارد.");
+            errorResponse(response, HttpServletResponse.SC_NOT_FOUND, "مالک این خانه در سیستم وجود ندارد.");
         }
     }
 }

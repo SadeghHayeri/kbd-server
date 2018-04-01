@@ -39,7 +39,9 @@ public class FieldsFilter implements Filter {
 
         String fields = request.getParameter("fields");
         if(fields == null) {
-            chain.doFilter(req, resp);
+            CharResponseWrapper responseWrapper = new CharResponseWrapper(response);
+            chain.doFilter(req, responseWrapper);
+            response.getWriter().write(responseWrapper.toString());
         } else {
             try {
                 CharResponseWrapper responseWrapper = new CharResponseWrapper(response);
@@ -49,26 +51,26 @@ public class FieldsFilter implements Filter {
 
                 JSONObject realResponse = new JSONObject(responseWrapper.toString());
                 JSONObject targetResponse = new JSONObject();
-                if(realResponse.length() == 2 && !realResponse.has("message")) {    //code + array //TODO: clean this plz :/
 
-                    // get key!
-                    Iterator<String> keys = realResponse.keys();
-                    String key = keys.next();
-                    if(key.equals("code"))
-                        key = keys.next();
+                targetResponse.put("code", realResponse.get("code"));
+                if(realResponse.has("message"))
+                    targetResponse.put("message", realResponse.get("message"));
 
-                    JSONArray realArray = realResponse.getJSONArray(key);
-
-                    JSONArray targetArray = new JSONArray();
-                    for (int i = 0; i < realArray.length(); i++) {
-                        JSONObject realItem = realArray.getJSONObject(i);
-                        JSONObject filteredItem = JSONService.keepAllowedKeys(realItem, items);
+                if(realResponse.has("data")) {
+                    Object data = realResponse.get("data");
+                    if(data instanceof JSONObject) {
+                        targetResponse.put("data", JSONService.keepAllowedKeys((JSONObject) data, items));
+                    } else {
+                        JSONArray realArray = (JSONArray) data;
+                        JSONArray targetArray = new JSONArray();
+                        for (int i = 0; i < realArray.length(); i++) {
+                            JSONObject realItem = realArray.getJSONObject(i);
+                            JSONObject filteredItem = JSONService.keepAllowedKeys(realItem, items);
 //
-                        targetArray.put(filteredItem);
+                            targetArray.put(filteredItem);
+                        }
+                        targetResponse.put("data", targetArray);
                     }
-                    targetResponse.put(key, targetArray);
-                } else {
-                    targetResponse = JSONService.keepAllowedKeys(realResponse, items);
                 }
 
                 response.getWriter().write(targetResponse.toString());

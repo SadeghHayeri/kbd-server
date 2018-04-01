@@ -1,5 +1,6 @@
 package KBD.v1.filters;
 
+import KBD.v1.Exceptions.FieldNotFoundException;
 import org.json.JSONObject;
 import org.json.JSONException;
 
@@ -23,7 +24,7 @@ public class ExceptionHandler implements Filter {
 
         try {
             chain.doFilter(req, resp);
-        } catch (FileNotFoundException e) {
+        } catch (FieldNotFoundException e) {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
