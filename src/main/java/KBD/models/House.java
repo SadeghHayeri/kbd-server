@@ -132,7 +132,7 @@ public class House {
     }
 
     public String getHiddenPhone() {
-        return phone.substring(0, 1) + "*****" + phone.substring(6);
+        return phone.substring(0, 2) + "*****" + phone.substring(7);
     }
 
     public String getDescription() {
@@ -150,10 +150,10 @@ public class House {
     public JSONObject toJson (List<String> keys) {
         JSONObject data = new JSONObject();
         data.put("id", id);
-        data.put("owner", owner);
+        data.put("owner", owner.toString());
         data.put("area", area);
         data.put("address", address);
-        data.put("buildingType", buildingType);
+        data.put("buildingType", buildingType.toString());
         data.put("imgURL", imageURL);
         data.put("dealType", dealType);
         data.put("description", description);
