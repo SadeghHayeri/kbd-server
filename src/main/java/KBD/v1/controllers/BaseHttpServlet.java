@@ -74,6 +74,15 @@ public class BaseHttpServlet extends HttpServlet {
         sendJsonResponse(response, data);
     }
 
+    protected void successResponse(HttpServletResponse response, String message, JSONObject responseData) throws IOException {
+        JSONObject data = new JSONObject();
+        data.put("code", 200);
+        data.put("message", message);
+        data.put("data", responseData);
+
+        sendJsonResponse(response, data);
+    }
+
     protected void errorResponse(HttpServletResponse response, int code, String message) throws IOException {
         JSONObject data = new JSONObject();
         data.put("code", code);

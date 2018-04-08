@@ -153,7 +153,7 @@ public class House {
         data.put("owner", owner.toString());
         data.put("area", area);
         data.put("address", address);
-        data.put("buildingType", buildingType.toString());
+        data.put("buildingType", buildingType);
         data.put("imgURL", imageURL);
         data.put("dealType", dealType);
         data.put("description", description);
