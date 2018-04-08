@@ -39,9 +39,7 @@ public class FieldsFilter implements Filter {
 
         String fields = request.getParameter("fields");
         if(fields == null) {
-            CharResponseWrapper responseWrapper = new CharResponseWrapper(response);
-            chain.doFilter(req, responseWrapper);
-            response.getWriter().write(responseWrapper.toString());
+            chain.doFilter(req, response);
         } else {
             try {
                 CharResponseWrapper responseWrapper = new CharResponseWrapper(response);

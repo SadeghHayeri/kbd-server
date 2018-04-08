@@ -53,6 +53,9 @@ public class BaseHttpServlet extends HttpServlet {
         if(data.length() != 0)
             finalResponse.put("data", data);
 
+        if(data.length() == 1 && data.has("data"))
+            finalResponse.put("data", data.get("data"));
+
         response.getWriter().print(finalResponse.toString());
     }
 

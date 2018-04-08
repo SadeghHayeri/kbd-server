@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 @WebServlet("/api/v1/house")
-public class Main extends BaseHttpServlet {
+public class List extends BaseHttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         JSONObject data = parseJsonData(request);
@@ -55,7 +55,12 @@ public class Main extends BaseHttpServlet {
         }
 
         Database.addHouse(newHouse);
-        successResponse(response, "خانه با موفقیت اضافه شد.");
+
+        java.util.List<String> attributes = Arrays.asList(
+                "id", "owner"
+        );
+        JSONObject jsonHouse = newHouse.toJson(attributes);
+        successResponse(response, "خانه با موفقیت اضافه شد.", jsonHouse);
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
