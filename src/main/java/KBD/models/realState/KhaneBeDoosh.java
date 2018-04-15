@@ -13,8 +13,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class KhaneBeDoosh extends RealStateUser {
-    public KhaneBeDoosh(String name, String apiAddress) {
-        super(name, apiAddress);
+    public KhaneBeDoosh(int id, String name, String apiAddress) {
+        super(id, name, apiAddress);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class KhaneBeDoosh extends RealStateUser {
             if (dealType == 0)
                 houses.add(
                     new House(
-                        HouseOwner.KHANE_BE_DOOSH,
+                        id,
                         house.getString("id"),
                         (house.getString("buildingType").equals("آپارتمان") ? BuildingType.APARTMENT : BuildingType.VILLA),
                         house.getInt("area"),
@@ -45,7 +45,7 @@ public class KhaneBeDoosh extends RealStateUser {
             else
                 houses.add(
                     new House(
-                        HouseOwner.KHANE_BE_DOOSH,
+                        id,
                         house.getString("id"),
                         (house.getString("buildingType").equals("آپارتمان") ? BuildingType.APARTMENT : BuildingType.VILLA),
                         house.getInt("area"),
@@ -71,7 +71,7 @@ public class KhaneBeDoosh extends RealStateUser {
         int dealType = house.getInt("dealType");
         if (dealType == 0)
             return new House(
-                HouseOwner.KHANE_BE_DOOSH,
+                id,
                 house.getString("id"),
                 (house.getString("buildingType").equals("آپارتمان") ? BuildingType.APARTMENT : BuildingType.VILLA),
                 house.getInt("area"),
@@ -83,7 +83,7 @@ public class KhaneBeDoosh extends RealStateUser {
             );
         else
             return new House(
-                HouseOwner.KHANE_BE_DOOSH,
+                id,
                 house.getString("id"),
                 (house.getString("buildingType").equals("آپارتمان") ? BuildingType.APARTMENT : BuildingType.VILLA),
                 house.getInt("area"),

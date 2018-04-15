@@ -11,6 +11,13 @@ public enum BuildingType {
             return APARTMENT;
     }
 
+    public int toInteger() {
+        if (this == VILLA)
+            return 0;
+        else
+            return 1;
+    }
+
     public static BuildingType parseBuildingType(String type) {
         return parseBuildingType(Integer.parseInt(type));
     }

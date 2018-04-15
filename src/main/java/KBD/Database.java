@@ -1,5 +1,6 @@
 package KBD;
 
+import KBD.models.Logger;
 import KBD.v1.Exceptions.NotFoundException;
 import KBD.models.House;
 import KBD.models.IndividualUser;
@@ -8,17 +9,45 @@ import KBD.models.enums.BuildingType;
 import KBD.models.enums.DealType;
 import KBD.models.enums.HouseOwner;
 import KBD.models.realState.KhaneBeDoosh;
+import org.apache.commons.dbcp.BasicDataSource;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 public class Database {
-    private static ArrayList<House> houses = new ArrayList<>();
+    public static ArrayList<House> houses = new ArrayList<>();
     private static ArrayList<IndividualUser> users = new ArrayList<>();
     private static ArrayList<RealStateUser> realStateUsers = new ArrayList<>();
+    private static BasicDataSource source = new org.apache.commons.dbcp.BasicDataSource();
 
     static {
-        users.add(new IndividualUser("بهنام همایون", "behnam_homayoon", "09123456789", 0, "123"));
-        realStateUsers.add(new KhaneBeDoosh(HouseOwner.KHANE_BE_DOOSH.toString(), "http://acm.ut.ac.ir/khaneBeDoosh"));
+        source.setDriverClassName("org.sqlite.JDBC");
+        source.setUrl("jdbc:sqlite:database.db");
+
+        createTables();
+        RealStateUser.create(HouseOwner.SYSTEM.toString(), "");
+        RealStateUser.create(HouseOwner.KHANE_BE_DOOSH.toString(), "http://acm.ut.ac.ir/khaneBeDoosh/v2");
+        IndividualUser.create("بهنام همایون", "behnam_homayoon", "09123456789", 0, "123");
+
+        RealStateUser system = RealStateUser.find(HouseOwner.SYSTEM.toString());
+        if (system != null) {
+            House.createSellHouse(system.getId(), BuildingType.VILLA, 100, "be to che", Config.NO_IMAGE_PATH, 1500, "09333564931", "nadare");
+            House.createSellHouse(system.getId(), BuildingType.APARTMENT, 102, "address", Config.NO_IMAGE_PATH, 100, "09333564932", "nadare");
+            House.createSellHouse(system.getId(), BuildingType.APARTMENT, 1000, "khoone", Config.NO_IMAGE_PATH, 2500, "09333564933", "nadare");
+            House.createSellHouse(system.getId(), BuildingType.VILLA, 50, "salam", Config.NO_IMAGE_PATH, 1550, "09333564934", "nadare");
+
+            House.createRentHouse(system.getId(), BuildingType.VILLA, 100, "be to che", Config.NO_IMAGE_PATH, 1500, 100, "09333564931", "nadare");
+            House.createRentHouse(system.getId(), BuildingType.APARTMENT, 102, "address", Config.NO_IMAGE_PATH, 100, 500, "09333564932", "nadare");
+            House.createRentHouse(system.getId(), BuildingType.APARTMENT, 1000, "khoone", Config.NO_IMAGE_PATH, 2500, 200, "09333564933", "nadare");
+            House.createRentHouse(system.getId(), BuildingType.VILLA, 50, "salam", Config.NO_IMAGE_PATH, 1550, 150, "09333564934", "nadare");
+        }
+
+        fetchHouses();
+
+        users.add(new IndividualUser(1, "بهنام همایون", "behnam_homayoon", "09123456789", 0, "123"));
+        realStateUsers.add(new KhaneBeDoosh(2, "khane-be-doosh", "http://acm.ut.ac.ir/khaneBeDoosh/v2"));
 
         houses.add(new House(BuildingType.VILLA, 100, "be to che", 1500, "09333564931", "nadare"));
         houses.add(new House(BuildingType.APARTMENT, 102, "address", 100, "09333564932", "nadare"));
@@ -29,6 +58,77 @@ public class Database {
         houses.add(new House(BuildingType.APARTMENT, 102, "address", 100, 500, "09333564932", "nadare"));
         houses.add(new House(BuildingType.APARTMENT, 1000, "khoone", 2500, 200, "09333564933", "nadare"));
         houses.add(new House(BuildingType.VILLA, 50, "salam", 1550, 150, "09333564934", "nadare"));
+    }
+
+    public static Connection getConnection() throws SQLException {
+        return source.getConnection();
+    }
+
+    private static void createTables() {
+        try {
+            Connection connection = getConnection();
+            Statement statement = connection.createStatement();
+
+            statement.executeUpdate(
+                    "CREATE TABLE IF NOT EXISTS individual_users(" +
+                            "id INTEGER PRIMARY KEY," +
+                            "name VARCHAR(255)," +
+                            "phone VARCHAR(255) UNIQUE," +
+                            "balance INTEGER," +
+                            "username VARCHAR(255) UNIQUE," +
+                            "password VARCHAR(255)" +
+                            ")");
+
+            statement.executeUpdate(
+                    "CREATE TABLE IF NOT EXISTS realstate_users(" +
+                            "id INTEGER PRIMARY KEY," +
+                            "name VARCHAR(255)," +
+                            "api_address VARCHAR(255)" +
+                            ")");
+
+            statement.executeUpdate(
+                    "CREATE TABLE IF NOT EXISTS houses(" +
+                            "id VARCHAR(255)," +
+                            "owner INTEGER," +
+                            "building_type INTEGER," +
+                            "area INTEGER," +
+                            "address VARCHAR(255)," +
+                            "image_URL VARCHAR(255)," +
+                            "deal_type INTEGER," +
+                            "base_price INTEGER," +
+                            "rent_price INTEGER," +
+                            "sell_price INTEGER," +
+                            "phone VARCHAR(255)," +
+                            "description TEXT," +
+                            "PRIMARY KEY (id, owner)," +
+                            "FOREIGN KEY (owner) REFERENCES realstate_users(id) ON DELETE CASCADE" +
+                            ")");
+
+            statement.executeUpdate(
+                    "CREATE TABLE IF NOT EXISTS paid_houses(" +
+                            "user_id INTEGER," +
+                            "house_id VARCHAR(255)," +
+                            "house_owner INTEGER," +
+                            "PRIMARY KEY (user_id, house_id, house_owner)" +
+                            "FOREIGN KEY (user_id) REFERENCES individual_users(id) ON DELETE CASCADE," +
+                            "FOREIGN KEY (house_id, house_owner) REFERENCES houses(id, owner) ON DELETE CASCADE," +
+                            "FOREIGN KEY (house_owner) REFERENCES realstate_users(id) ON DELETE CASCADE" +
+                            ")");
+
+            Logger.info("transactions done!");
+            connection.close();
+        } catch (SQLException e) {
+            Logger.error(e.getMessage());
+        }
+    }
+
+    private static void fetchHouses() {
+        for (RealStateUser realStateUser: RealStateUser.list()) {
+            realStateUser.deleteHouses();
+            for (House house: realStateUser.getHouses()) {
+                house.save();
+            }
+        }
     }
 
     public static void addHouse(House newHouse) {

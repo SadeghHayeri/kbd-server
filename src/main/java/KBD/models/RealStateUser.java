@@ -1,6 +1,11 @@
 package KBD.models;
 
 
+import KBD.Database;
+import KBD.models.enums.DealType;
+import KBD.models.enums.HouseOwner;
+import KBD.models.realState.KhaneBeDoosh;
+import KBD.models.realState.System;
 import KBD.v1.Exceptions.NotFoundException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -8,6 +13,10 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 /**
@@ -16,8 +25,96 @@ import java.util.ArrayList;
 abstract public class RealStateUser extends User {
     private String apiAddress;
 
-    public RealStateUser(String name, String apiAddress) {
-        super(name);
+    private static final String TABLE_NAME = "realstate_users";
+
+    public static void create(String name, String apiAddress) {
+        try {
+            Connection connection = Database.getConnection();
+
+            Statement statement = connection.createStatement();
+            statement.executeUpdate( String.format(
+                    "INSERT INTO %s (name, api_address) VALUES ('%s', '%s')", TABLE_NAME, name, apiAddress)
+            );
+
+            connection.close();
+        } catch (SQLException e) {
+            Logger.error(e.getMessage());
+        }
+    }
+
+    public static RealStateUser find(String name) {
+        try {
+            Connection connection = Database.getConnection();
+
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(String.format(
+                    "SELECT * FROM %s WHERE name = '%s'", TABLE_NAME, name)
+            );
+
+            RealStateUser realStateUser = null;
+            if (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String apiAddress = resultSet.getString("api_address");
+                realStateUser = RealStateUser.make(id, name, apiAddress);
+            }
+            connection.close();
+            return realStateUser;
+        } catch (SQLException e) {
+            Logger.error(e.getMessage());
+            return null;
+        }
+    }
+
+    public static ArrayList<RealStateUser> list() {
+        ArrayList<RealStateUser> realStateUsers = new ArrayList<>();
+        try {
+            Connection connection = Database.getConnection();
+
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(String.format(
+                    "SELECT * FROM %s WHERE name != '%s'", TABLE_NAME, HouseOwner.SYSTEM.toString())
+            );
+
+            if (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String name = resultSet.getString("name");
+                String apiAddress = resultSet.getString("api_address");
+                realStateUsers.add(RealStateUser.make(id, name, apiAddress));
+            }
+            connection.close();
+        } catch (SQLException e) {
+            Logger.error(e.getMessage());
+        }
+        return realStateUsers;
+    }
+
+    public static RealStateUser make(int id, String name, String apiAddress) {
+        RealStateUser realStateUser = null;
+        if (name.equals(HouseOwner.SYSTEM.toString()))
+            realStateUser = new System(id, name, apiAddress);
+        else if (name.equals(HouseOwner.KHANE_BE_DOOSH.toString()))
+            realStateUser = new KhaneBeDoosh(id, name, apiAddress);
+        return realStateUser;
+    }
+
+    public void deleteHouses() {
+        try {
+            Connection connection = Database.getConnection();
+
+            Statement statement = connection.createStatement();
+            statement.executeUpdate( String.format(
+                    "DELETE FROM %s WHERE owner == %d",
+                    House.TABLE_NAME, id)
+            );
+
+            connection.close();
+        } catch (SQLException e) {
+            Logger.error(e.getMessage());
+        }
+    }
+
+    public RealStateUser(int id, String name, String apiAddress) {
+        super(id, name);
         this.apiAddress = apiAddress;
     }
 

@@ -9,17 +9,11 @@ import java.util.List;
  * Created by sadegh on 2/12/18.
  */
 public abstract class User {
-    static private int idCounter;
+    protected int id;
+    protected String name;
 
-    static {
-        idCounter = 1;
-    }
-
-    private int id;
-    private String name;
-
-    public User(String name) {
-        this.id = (idCounter++);
+    public User(int id, String name) {
+        this.id = id;
         this.name = name;
     }
 

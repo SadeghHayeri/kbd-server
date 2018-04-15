@@ -11,6 +11,13 @@ public enum DealType {
             return RENTAL;
     }
 
+    public int toInteger() {
+        if (this == BUY)
+            return 0;
+        else
+            return 1;
+    }
+
     public static DealType parseDealType(String type) {
         return parseDealType(Integer.parseInt(type));
     }

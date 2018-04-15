@@ -1,22 +1,71 @@
 package KBD.models;
 
 import KBD.Config;
+import KBD.Database;
 import KBD.models.enums.BuildingType;
 import KBD.models.enums.DealType;
 import KBD.models.enums.HouseOwner;
 import KBD.v1.services.JSONService;
 import org.json.JSONObject;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 /**
  * Created by sadegh on 2/12/18.
  */
 public class House {
+    public static final String TABLE_NAME = "houses";
     static private int idCounter;
 
     static {
         idCounter = 1;
+    }
+    
+    public static void createSellHouse(int owner, BuildingType buildingType, int area, String address, String imageURL,
+                                       int sellPrice, String phone, String description) {
+        try {
+            Connection connection = Database.getConnection();
+
+            Statement statement = connection.createStatement();
+            statement.executeUpdate( String.format(
+                    "INSERT INTO %s (owner, building_type, area, address, image_URL, deal_type, sell_price, phone, description) " +
+                            "VALUES (%d, %d, %d, '%s', '%s', %d, %d, '%s', '%s')",
+                    TABLE_NAME, owner, buildingType.toInteger(), area, address, imageURL, DealType.BUY.toInteger(), sellPrice, phone, description)
+            );
+
+            connection.close();
+        } catch (SQLException e) {
+            Logger.error(e.getMessage());
+        }
+    }
+
+    public static void createRentHouse(int owner, BuildingType buildingType, int area, String address, String imageURL,
+                                       int basePrice, int rentPrice, String phone, String description) {
+        try {
+            Connection connection = Database.getConnection();
+
+            Statement statement = connection.createStatement();
+            statement.executeUpdate( String.format(
+                    "INSERT INTO %s (owner, building_type, area, address, image_URL, deal_type, base_price, rent_price, phone, description) " +
+                            "VALUES (%d, %d, %d, '%s', '%s', %d, %d, %d, '%s', '%s')",
+                    TABLE_NAME, owner, buildingType.toInteger(), area, address, imageURL, DealType.RENTAL.toInteger(), basePrice, rentPrice, phone, description)
+            );
+
+            connection.close();
+        } catch (SQLException e) {
+            Logger.error(e.getMessage());
+        }
+    }
+
+
+    public void save() {
+        if (dealType == DealType.RENTAL)
+            createRentHouse(owner, buildingType, area, address, imageURL, basePrice, rentPrice, phone, description);
+        else
+            createSellHouse(owner, buildingType, area, address, imageURL, sellPrice, phone, description);
     }
 
     private String id;
@@ -30,13 +79,12 @@ public class House {
     private int sellPrice;
     private String phone;
     private String description;
-    private String expireTime;
-    private HouseOwner owner;
+    private int owner;
 
     public House(BuildingType buildingType, int area, String address, int sellPrice, String phone, String description) {
         this.dealType = DealType.BUY;
 
-        this.owner = HouseOwner.SYSTEM;
+//        this.owner = HouseOwner.SYSTEM;
         this.id = Integer.toString(idCounter++);
         this.buildingType = buildingType;
         this.area = area;
@@ -47,7 +95,7 @@ public class House {
         this.imageURL = Config.NO_IMAGE_PATH;
     }
 
-    public House(HouseOwner owner, String id, BuildingType buildingType, int area, String address, int sellPrice, String phone, String description, String imageURL) {
+    public House(int owner, String id, BuildingType buildingType, int area, String address, int sellPrice, String phone, String description, String imageURL) {
         this.dealType = DealType.BUY;
 
         this.owner = owner;
@@ -64,7 +112,7 @@ public class House {
     public House(BuildingType buildingType, int area, String address, int basePrice, int rentPrice, String phone, String description) {
         this.dealType = DealType.RENTAL;
 
-        this.owner = HouseOwner.SYSTEM;
+//        this.owner = HouseOwner.SYSTEM;
         this.id = Integer.toString(idCounter++);
         this.buildingType = buildingType;
         this.area = area;
@@ -76,7 +124,7 @@ public class House {
         this.imageURL = Config.NO_IMAGE_PATH;
     }
 
-    public House(HouseOwner owner, String id, BuildingType buildingType, int area, String address, int basePrice, int rentPrice, String phone, String description, String imageURL) {
+    public House(int owner, String id, BuildingType buildingType, int area, String address, int basePrice, int rentPrice, String phone, String description, String imageURL) {
         this.dealType = DealType.RENTAL;
 
         this.owner = owner;
@@ -139,18 +187,14 @@ public class House {
         return description;
     }
 
-    public String getExpireTime() {
-        return expireTime;
-    }
-
-    public HouseOwner getOwner() {
+    public int getOwner() {
         return owner;
     }
 
     public JSONObject toJson (List<String> keys) {
         JSONObject data = new JSONObject();
         data.put("id", id);
-        data.put("owner", owner.toString());
+//        data.put("owner", owner.toString());
         data.put("area", area);
         data.put("address", address);
         data.put("buildingType", buildingType);
