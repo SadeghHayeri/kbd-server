@@ -23,17 +23,12 @@ public class IndividualUser extends User {
     private ArrayList<PaidHouse> paidHouses;
 
     public static void create(String name, String username, String phone, int balance, String password) {
-        try {
-            Connection connection = Database.getConnection();
-
-            Statement statement = connection.createStatement();
-            statement.executeUpdate( String.format("INSERT INTO %s (name, phone, balance, username, password) VALUES (" +
-                    "'%s', '%s', %d, '%s', '%s')", TABLE_NAME, name, phone, balance, username, password) );
-
-            connection.close();
-        } catch (SQLException e) {
-            Logger.error(e.getMessage());
-        }
+        executeUpdate(
+                String.format(
+                        "INSERT INTO %s (name, phone, balance, username, password) VALUES (" +
+                        "'%s', '%s', %d, '%s', '%s')", TABLE_NAME, name, phone, balance, username, password
+                )
+        );
     }
 
     public IndividualUser(int id, String name, String username, String phone, int balance, String password) {

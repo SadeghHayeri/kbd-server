@@ -12,60 +12,63 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by sadegh on 2/12/18.
  */
-public class House {
+public class House extends BaseModel{
     public static final String TABLE_NAME = "houses";
-    static private int idCounter;
 
-    static {
-        idCounter = 1;
+    public static void createSellHouse(String id, int owner, BuildingType buildingType, int area, String address, String imageURL,
+                                       int sellPrice, String phone, String description) {
+        executeUpdate(
+            String.format(
+                "INSERT INTO %s (id, owner, building_type, area, address, image_URL, deal_type, sell_price, phone, description) " +
+                "VALUES ('%s', %d, %d, %d, '%s', '%s', %d, %d, '%s', '%s')",
+                TABLE_NAME, id, owner, buildingType.toInteger(), area, address, imageURL, DealType.BUY.toInteger(), sellPrice, phone, description
+            )
+        );
     }
-    
+
     public static void createSellHouse(int owner, BuildingType buildingType, int area, String address, String imageURL,
                                        int sellPrice, String phone, String description) {
-        try {
-            Connection connection = Database.getConnection();
+        String id = UUID.randomUUID().toString();
+        createSellHouse(id, owner, buildingType, area, address, imageURL, sellPrice, phone, description);
+    }
 
-            Statement statement = connection.createStatement();
-            statement.executeUpdate( String.format(
-                    "INSERT INTO %s (owner, building_type, area, address, image_URL, deal_type, sell_price, phone, description) " +
-                            "VALUES (%d, %d, %d, '%s', '%s', %d, %d, '%s', '%s')",
-                    TABLE_NAME, owner, buildingType.toInteger(), area, address, imageURL, DealType.BUY.toInteger(), sellPrice, phone, description)
-            );
+    public static void createRentHouse(String id, int owner, BuildingType buildingType, int area, String address, String imageURL,
+                                       int basePrice, int rentPrice, String phone, String description) {
 
-            connection.close();
-        } catch (SQLException e) {
-            Logger.error(e.getMessage());
-        }
+        executeUpdate(
+                String.format(
+                        "INSERT INTO %s (id, owner, building_type, area, address, image_URL, deal_type, base_price, rent_price, phone, description) " +
+                        "VALUES ('%s', %d, %d, %d, '%s', '%s', %d, %d, %d, '%s', '%s')",
+                        TABLE_NAME, id, owner, buildingType.toInteger(), area, address, imageURL, DealType.RENTAL.toInteger(), basePrice, rentPrice, phone, description
+                )
+        );
     }
 
     public static void createRentHouse(int owner, BuildingType buildingType, int area, String address, String imageURL,
                                        int basePrice, int rentPrice, String phone, String description) {
-        try {
-            Connection connection = Database.getConnection();
-
-            Statement statement = connection.createStatement();
-            statement.executeUpdate( String.format(
-                    "INSERT INTO %s (owner, building_type, area, address, image_URL, deal_type, base_price, rent_price, phone, description) " +
-                            "VALUES (%d, %d, %d, '%s', '%s', %d, %d, %d, '%s', '%s')",
-                    TABLE_NAME, owner, buildingType.toInteger(), area, address, imageURL, DealType.RENTAL.toInteger(), basePrice, rentPrice, phone, description)
-            );
-
-            connection.close();
-        } catch (SQLException e) {
-            Logger.error(e.getMessage());
-        }
+        String id = UUID.randomUUID().toString();
+        createRentHouse(id, owner, buildingType, area, address, imageURL, basePrice, rentPrice, phone, description);
     }
 
 
     public void save() {
-        if (dealType == DealType.RENTAL)
-            createRentHouse(owner, buildingType, area, address, imageURL, basePrice, rentPrice, phone, description);
-        else
-            createSellHouse(owner, buildingType, area, address, imageURL, sellPrice, phone, description);
+        if (dealType == DealType.RENTAL) {
+            if (id == null)
+                createRentHouse(owner, buildingType, area, address, imageURL, basePrice, rentPrice, phone, description);
+            else
+                createRentHouse(id, owner, buildingType, area, address, imageURL, basePrice, rentPrice, phone, description);
+        }
+        else {
+            if (id == null)
+                createSellHouse(owner, buildingType, area, address, imageURL, sellPrice, phone, description);
+            else
+                createSellHouse(id, owner, buildingType, area, address, imageURL, sellPrice, phone, description);
+        }
     }
 
     private String id;
@@ -85,7 +88,6 @@ public class House {
         this.dealType = DealType.BUY;
 
 //        this.owner = HouseOwner.SYSTEM;
-        this.id = Integer.toString(idCounter++);
         this.buildingType = buildingType;
         this.area = area;
         this.address = address;
@@ -113,7 +115,6 @@ public class House {
         this.dealType = DealType.RENTAL;
 
 //        this.owner = HouseOwner.SYSTEM;
-        this.id = Integer.toString(idCounter++);
         this.buildingType = buildingType;
         this.area = area;
         this.address = address;

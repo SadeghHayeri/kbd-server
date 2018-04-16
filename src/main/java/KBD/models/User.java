@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by sadegh on 2/12/18.
  */
-public abstract class User {
+public abstract class User extends BaseModel{
     protected int id;
     protected String name;
 

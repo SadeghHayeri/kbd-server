@@ -73,9 +73,9 @@ public class Database {
                     "CREATE TABLE IF NOT EXISTS individual_users(" +
                             "id INTEGER PRIMARY KEY," +
                             "name VARCHAR(255)," +
-                            "phone VARCHAR(255) UNIQUE," +
+                            "phone VARCHAR(255)," +
                             "balance INTEGER," +
-                            "username VARCHAR(255) UNIQUE," +
+                            "username VARCHAR(255)," +
                             "password VARCHAR(255)" +
                             ")");
 

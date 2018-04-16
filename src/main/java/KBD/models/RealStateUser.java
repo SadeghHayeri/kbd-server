@@ -2,7 +2,6 @@ package KBD.models;
 
 
 import KBD.Database;
-import KBD.models.enums.DealType;
 import KBD.models.enums.HouseOwner;
 import KBD.models.realState.KhaneBeDoosh;
 import KBD.models.realState.System;
@@ -28,31 +27,22 @@ abstract public class RealStateUser extends User {
     private static final String TABLE_NAME = "realstate_users";
 
     public static void create(String name, String apiAddress) {
-        try {
-            Connection connection = Database.getConnection();
-
-            Statement statement = connection.createStatement();
-            statement.executeUpdate( String.format(
-                    "INSERT INTO %s (name, api_address) VALUES ('%s', '%s')", TABLE_NAME, name, apiAddress)
-            );
-
-            connection.close();
-        } catch (SQLException e) {
-            Logger.error(e.getMessage());
-        }
+        executeUpdate(
+            String.format("INSERT INTO %s (name, api_address) VALUES ('%s', '%s')", TABLE_NAME, name, apiAddress)
+        );
     }
 
     public static RealStateUser find(String name) {
         try {
             Connection connection = Database.getConnection();
-
             Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(String.format(
-                    "SELECT * FROM %s WHERE name = '%s'", TABLE_NAME, name)
+
+            ResultSet resultSet = statement.executeQuery(
+                    String.format("SELECT * FROM %s WHERE name = '%s'", TABLE_NAME, name)
             );
 
             RealStateUser realStateUser = null;
-            if (resultSet.next()) {
+            if (resultSet != null && resultSet.next()) {
                 int id = resultSet.getInt("id");
                 String apiAddress = resultSet.getString("api_address");
                 realStateUser = RealStateUser.make(id, name, apiAddress);
@@ -69,13 +59,13 @@ abstract public class RealStateUser extends User {
         ArrayList<RealStateUser> realStateUsers = new ArrayList<>();
         try {
             Connection connection = Database.getConnection();
-
             Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(String.format(
-                    "SELECT * FROM %s WHERE name != '%s'", TABLE_NAME, HouseOwner.SYSTEM.toString())
+
+            ResultSet resultSet = statement.executeQuery(
+                    String.format("SELECT * FROM %s WHERE name != '%s'", TABLE_NAME, HouseOwner.SYSTEM.toString())
             );
 
-            if (resultSet.next()) {
+            if (resultSet != null && resultSet.next()) {
                 int id = resultSet.getInt("id");
                 String name = resultSet.getString("name");
                 String apiAddress = resultSet.getString("api_address");
@@ -98,19 +88,9 @@ abstract public class RealStateUser extends User {
     }
 
     public void deleteHouses() {
-        try {
-            Connection connection = Database.getConnection();
-
-            Statement statement = connection.createStatement();
-            statement.executeUpdate( String.format(
-                    "DELETE FROM %s WHERE owner == %d",
-                    House.TABLE_NAME, id)
-            );
-
-            connection.close();
-        } catch (SQLException e) {
-            Logger.error(e.getMessage());
-        }
+        executeUpdate(
+                String.format("DELETE FROM %s WHERE owner == %d", House.TABLE_NAME, id)
+        );
     }
 
     public RealStateUser(int id, String name, String apiAddress) {
