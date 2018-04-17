@@ -26,9 +26,27 @@ abstract public class RealStateUser extends User {
 
     private static final String TABLE_NAME = "realstate_users";
 
-    public static void create(String name, String apiAddress) {
+    public RealStateUser(int id, String name, String apiAddress) {
+        super(id, name);
+        this.apiAddress = apiAddress;
+
+        this.isSaved = true;
+    }
+
+    protected RealStateUser(String name, String apiAddress) {
+        super(name);
+        this.apiAddress = apiAddress;
+    }
+
+    public void save() {
         executeUpdate(
-            String.format("INSERT INTO %s (name, api_address) VALUES ('%s', '%s')", TABLE_NAME, name, apiAddress)
+                String.format("INSERT INTO %s (name, api_address) VALUES ('%s', '%s')", TABLE_NAME, name, apiAddress)
+        );
+    }
+
+    public void deleteHouses() {
+        executeUpdate(
+                String.format("DELETE FROM %s WHERE owner == %d", House.TABLE_NAME, id)
         );
     }
 
@@ -85,17 +103,6 @@ abstract public class RealStateUser extends User {
         else if (name.equals(HouseOwner.KHANE_BE_DOOSH.toString()))
             realStateUser = new KhaneBeDoosh(id, name, apiAddress);
         return realStateUser;
-    }
-
-    public void deleteHouses() {
-        executeUpdate(
-                String.format("DELETE FROM %s WHERE owner == %d", House.TABLE_NAME, id)
-        );
-    }
-
-    public RealStateUser(int id, String name, String apiAddress) {
-        super(id, name);
-        this.apiAddress = apiAddress;
     }
 
     public String getHouseListApiAddress() {

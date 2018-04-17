@@ -3,7 +3,6 @@ package KBD.models.realState;
 import KBD.models.House;
 import KBD.models.RealStateUser;
 import KBD.models.enums.BuildingType;
-import KBD.models.enums.HouseOwner;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
@@ -15,6 +14,10 @@ import java.util.ArrayList;
 public class KhaneBeDoosh extends RealStateUser {
     public KhaneBeDoosh(int id, String name, String apiAddress) {
         super(id, name, apiAddress);
+    }
+
+    public KhaneBeDoosh(String name, String apiAddress) {
+        super(name, apiAddress);
     }
 
     @Override

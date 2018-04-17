@@ -27,27 +27,19 @@ public class Database {
         source.setUrl("jdbc:sqlite:database.db");
 
         createTables();
-        RealStateUser.create(HouseOwner.SYSTEM.toString(), "");
-        RealStateUser.create(HouseOwner.KHANE_BE_DOOSH.toString(), "http://acm.ut.ac.ir/khaneBeDoosh/v2");
-        IndividualUser.create("بهنام همایون", "behnam_homayoon", "09123456789", 0, "123");
-
-        RealStateUser system = RealStateUser.find(HouseOwner.SYSTEM.toString());
-        if (system != null) {
-            House.createSellHouse(system.getId(), BuildingType.VILLA, 100, "be to che", Config.NO_IMAGE_PATH, 1500, "09333564931", "nadare");
-            House.createSellHouse(system.getId(), BuildingType.APARTMENT, 102, "address", Config.NO_IMAGE_PATH, 100, "09333564932", "nadare");
-            House.createSellHouse(system.getId(), BuildingType.APARTMENT, 1000, "khoone", Config.NO_IMAGE_PATH, 2500, "09333564933", "nadare");
-            House.createSellHouse(system.getId(), BuildingType.VILLA, 50, "salam", Config.NO_IMAGE_PATH, 1550, "09333564934", "nadare");
-
-            House.createRentHouse(system.getId(), BuildingType.VILLA, 100, "be to che", Config.NO_IMAGE_PATH, 1500, 100, "09333564931", "nadare");
-            House.createRentHouse(system.getId(), BuildingType.APARTMENT, 102, "address", Config.NO_IMAGE_PATH, 100, 500, "09333564932", "nadare");
-            House.createRentHouse(system.getId(), BuildingType.APARTMENT, 1000, "khoone", Config.NO_IMAGE_PATH, 2500, 200, "09333564933", "nadare");
-            House.createRentHouse(system.getId(), BuildingType.VILLA, 50, "salam", Config.NO_IMAGE_PATH, 1550, 150, "09333564934", "nadare");
-        }
+        seed();
 
         fetchHouses();
 
-        users.add(new IndividualUser(1, "بهنام همایون", "behnam_homayoon", "09123456789", 0, "123"));
-        realStateUsers.add(new KhaneBeDoosh(2, "khane-be-doosh", "http://acm.ut.ac.ir/khaneBeDoosh/v2"));
+    }
+
+    public static Connection getConnection() throws SQLException {
+        return source.getConnection();
+    }
+
+    private static void seed() {
+        users.add(new IndividualUser("بهنام همایون", "behnam_homayoon", "09123456789", 0, "123"));
+        realStateUsers.add(new KhaneBeDoosh("khane-be-doosh", "http://acm.ut.ac.ir/khaneBeDoosh/v2"));
 
         houses.add(new House(BuildingType.VILLA, 100, "be to che", 1500, "09333564931", "nadare"));
         houses.add(new House(BuildingType.APARTMENT, 102, "address", 100, "09333564932", "nadare"));
@@ -58,10 +50,15 @@ public class Database {
         houses.add(new House(BuildingType.APARTMENT, 102, "address", 100, 500, "09333564932", "nadare"));
         houses.add(new House(BuildingType.APARTMENT, 1000, "khoone", 2500, 200, "09333564933", "nadare"));
         houses.add(new House(BuildingType.VILLA, 50, "salam", 1550, 150, "09333564934", "nadare"));
-    }
 
-    public static Connection getConnection() throws SQLException {
-        return source.getConnection();
+        for (House house: houses)
+            house.save();
+
+        for (IndividualUser user: users)
+            user.save();
+
+        for (RealStateUser realStateUser: realStateUsers)
+            realStateUser.save();
     }
 
     private static void createTables() {

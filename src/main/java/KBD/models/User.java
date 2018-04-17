@@ -12,9 +12,17 @@ public abstract class User extends BaseModel{
     protected int id;
     protected String name;
 
-    public User(int id, String name) {
+    public User(String name) {
+        this.isSaved = false;
+        this.id = BaseModel.NOT_INITIATE;
+        this.name = name;
+    }
+
+    protected User(int id, String name) {
         this.id = id;
         this.name = name;
+
+        this.isSaved = true;
     }
 
     public String getName() {

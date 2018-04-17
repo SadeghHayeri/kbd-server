@@ -20,24 +20,35 @@ public class IndividualUser extends User {
     private String phone;
     private int balance;
     private String password;
-    private ArrayList<PaidHouse> paidHouses;
+//    private ArrayList<PaidHouse> paidHouses;
 
-    public static void create(String name, String username, String phone, int balance, String password) {
-        executeUpdate(
-                String.format(
-                        "INSERT INTO %s (name, phone, balance, username, password) VALUES (" +
-                        "'%s', '%s', %d, '%s', '%s')", TABLE_NAME, name, phone, balance, username, password
-                )
-        );
-    }
-
-    public IndividualUser(int id, String name, String username, String phone, int balance, String password) {
+    private IndividualUser(int id, String name, String username, String phone, int balance, String password) {
         super(id, name);
         this.username = username;
         this.phone = phone;
         this.balance = balance;
         this.password = password;
         this.paidHouses = new ArrayList<>();
+
+        this.isSaved = true;
+    }
+
+    public IndividualUser(String name, String username, String phone, int balance, String password) {
+        super(name);
+        this.username = username;
+        this.phone = phone;
+        this.balance = balance;
+        this.password = password;
+        this.paidHouses = new ArrayList<>();
+    }
+
+    public void save() {
+        executeUpdate(
+                String.format(
+                        "INSERT INTO %s (name, phone, balance, username, password) VALUES ('%s', '%s', %d, '%s', '%s')",
+                        TABLE_NAME, name, phone, balance, username, password
+                )
+        );
     }
 
     public int getBalance() {
@@ -57,11 +68,12 @@ public class IndividualUser extends User {
     }
 
     public boolean hasPaid(House house) {
-        for (PaidHouse paidHouse : paidHouses)
-            if(paidHouse.houseOwner == house.getOwner())
-                if(paidHouse.houseId.equals(house.getId()))
-                    return true;
+//        for (PaidHouse paidHouse : paidHouses)
+//            if(paidHouse.houseOwner == house.getOwner())
+//                if(paidHouse.houseId.equals(house.getId()))
+//                    return true;
         return false;
+        //TODO: query
     }
 
     public boolean pay(House house) {
@@ -72,7 +84,10 @@ public class IndividualUser extends User {
             return false;
 
         balance -= Config.HOUSE_OWNER_NUMBER_PRICE;
-        paidHouses.add(new PaidHouse(house.getOwner(), house.getId()));
+        save();
+
+        PaidHouse paidHouse = new PaidHouse(house.getOwner(), house.getId());
+        paidHouse.save();
 
         return true;
     }

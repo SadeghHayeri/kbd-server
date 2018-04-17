@@ -1,16 +1,12 @@
 package KBD.models;
 
 import KBD.Config;
-import KBD.Database;
 import KBD.models.enums.BuildingType;
 import KBD.models.enums.DealType;
 import KBD.models.enums.HouseOwner;
 import KBD.v1.services.JSONService;
 import org.json.JSONObject;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,54 +16,24 @@ import java.util.UUID;
 public class House extends BaseModel{
     public static final String TABLE_NAME = "houses";
 
-    public static void createSellHouse(String id, int owner, BuildingType buildingType, int area, String address, String imageURL,
-                                       int sellPrice, String phone, String description) {
-        executeUpdate(
-            String.format(
-                "INSERT INTO %s (id, owner, building_type, area, address, image_URL, deal_type, sell_price, phone, description) " +
-                "VALUES ('%s', %d, %d, %d, '%s', '%s', %d, %d, '%s', '%s')",
-                TABLE_NAME, id, owner, buildingType.toInteger(), area, address, imageURL, DealType.BUY.toInteger(), sellPrice, phone, description
-            )
-        );
-    }
-
-    public static void createSellHouse(int owner, BuildingType buildingType, int area, String address, String imageURL,
-                                       int sellPrice, String phone, String description) {
-        String id = UUID.randomUUID().toString();
-        createSellHouse(id, owner, buildingType, area, address, imageURL, sellPrice, phone, description);
-    }
-
-    public static void createRentHouse(String id, int owner, BuildingType buildingType, int area, String address, String imageURL,
-                                       int basePrice, int rentPrice, String phone, String description) {
-
-        executeUpdate(
-                String.format(
-                        "INSERT INTO %s (id, owner, building_type, area, address, image_URL, deal_type, base_price, rent_price, phone, description) " +
-                        "VALUES ('%s', %d, %d, %d, '%s', '%s', %d, %d, %d, '%s', '%s')",
-                        TABLE_NAME, id, owner, buildingType.toInteger(), area, address, imageURL, DealType.RENTAL.toInteger(), basePrice, rentPrice, phone, description
-                )
-        );
-    }
-
-    public static void createRentHouse(int owner, BuildingType buildingType, int area, String address, String imageURL,
-                                       int basePrice, int rentPrice, String phone, String description) {
-        String id = UUID.randomUUID().toString();
-        createRentHouse(id, owner, buildingType, area, address, imageURL, basePrice, rentPrice, phone, description);
-    }
-
-
     public void save() {
         if (dealType == DealType.RENTAL) {
-            if (id == null)
-                createRentHouse(owner, buildingType, area, address, imageURL, basePrice, rentPrice, phone, description);
-            else
-                createRentHouse(id, owner, buildingType, area, address, imageURL, basePrice, rentPrice, phone, description);
+            executeUpdate(
+                    String.format(
+                            "INSERT INTO %s (id, owner, building_type, area, address, image_URL, deal_type, base_price, rent_price, phone, description) " +
+                                    "VALUES ('%s', %d, %d, %d, '%s', '%s', %d, %d, %d, '%s', '%s')",
+                            TABLE_NAME, id, owner, buildingType.toInteger(), area, address, imageURL, DealType.RENTAL.toInteger(), basePrice, rentPrice, phone, description
+                    )
+            );
         }
         else {
-            if (id == null)
-                createSellHouse(owner, buildingType, area, address, imageURL, sellPrice, phone, description);
-            else
-                createSellHouse(id, owner, buildingType, area, address, imageURL, sellPrice, phone, description);
+            executeUpdate(
+                    String.format(
+                            "INSERT INTO %s (id, owner, building_type, area, address, image_URL, deal_type, sell_price, phone, description) " +
+                                    "VALUES ('%s', %d, %d, %d, '%s', '%s', %d, %d, '%s', '%s')",
+                            TABLE_NAME, id, owner, buildingType.toInteger(), area, address, imageURL, DealType.BUY.toInteger(), sellPrice, phone, description
+                    )
+            );
         }
     }
 
@@ -87,7 +53,8 @@ public class House extends BaseModel{
     public House(BuildingType buildingType, int area, String address, int sellPrice, String phone, String description) {
         this.dealType = DealType.BUY;
 
-//        this.owner = HouseOwner.SYSTEM;
+        this.owner = RealStateUser.find(HouseOwner.SYSTEM.toString()).getId();
+        this.id = UUID.randomUUID().toString();
         this.buildingType = buildingType;
         this.area = area;
         this.address = address;
@@ -114,7 +81,8 @@ public class House extends BaseModel{
     public House(BuildingType buildingType, int area, String address, int basePrice, int rentPrice, String phone, String description) {
         this.dealType = DealType.RENTAL;
 
-//        this.owner = HouseOwner.SYSTEM;
+        this.owner = RealStateUser.find(HouseOwner.SYSTEM.toString()).getId();
+        this.id = UUID.randomUUID().toString();
         this.buildingType = buildingType;
         this.area = area;
         this.address = address;

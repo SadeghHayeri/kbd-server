@@ -7,6 +7,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class BaseModel {
+    protected final static int NOT_INITIATE = -1;
+    protected boolean isSaved = false;
+
     public static void executeUpdate(String query) {
         try {
             Connection connection = Database.getConnection();
