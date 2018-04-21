@@ -6,7 +6,6 @@ import KBD.models.House;
 import KBD.models.IndividualUser;
 import KBD.models.RealStateUser;
 import KBD.models.enums.BuildingType;
-import KBD.models.enums.DealType;
 import KBD.models.enums.HouseOwner;
 import KBD.models.realState.KhaneBeDoosh;
 import org.apache.commons.dbcp.BasicDataSource;
@@ -22,20 +21,21 @@ public class Database {
     private static ArrayList<RealStateUser> realStateUsers = new ArrayList<>();
     private static BasicDataSource source = new org.apache.commons.dbcp.BasicDataSource();
 
+    public final static String INDIVIDUAL_USERS_TB = "individual_users";
+    public final static String REALSTATE_USERS_TB = "realstate_users";
+    public final static String HOUSES_TB = "houses";
+    public final static String PAID_HOUSES_TB = "paid_houses";
+
     static {
         source.setDriverClassName("org.sqlite.JDBC");
         source.setUrl("jdbc:sqlite:database.db");
-
-        createTables();
-        seed();
-        fetchHouses();
     }
 
     public static Connection getConnection() throws SQLException {
         return source.getConnection();
     }
 
-    private static void seed() {
+    public static void seed() {
         users.add(new IndividualUser("بهنام همایون", "behnam_homayoon", "09123456789", 0, "123"));
         realStateUsers.add(new KhaneBeDoosh("khane-be-doosh", "http://acm.ut.ac.ir/khaneBeDoosh/v2"));
 
@@ -59,13 +59,13 @@ public class Database {
             realStateUser.save();
     }
 
-    private static void createTables() {
+    public static void createTables() {
         try {
             Connection connection = getConnection();
             Statement statement = connection.createStatement();
 
             statement.executeUpdate(
-                    "CREATE TABLE IF NOT EXISTS individual_users(" +
+                    "CREATE TABLE IF NOT EXISTS " + INDIVIDUAL_USERS_TB + "(" +
                             "id INTEGER PRIMARY KEY," +
                             "name VARCHAR(255)," +
                             "phone VARCHAR(255)," +
@@ -75,14 +75,14 @@ public class Database {
                             ")");
 
             statement.executeUpdate(
-                    "CREATE TABLE IF NOT EXISTS realstate_users(" +
+                    "CREATE TABLE IF NOT EXISTS " + REALSTATE_USERS_TB + "(" +
                             "id INTEGER PRIMARY KEY," +
                             "name VARCHAR(255)," +
                             "api_address VARCHAR(255)" +
                             ")");
 
             statement.executeUpdate(
-                    "CREATE TABLE IF NOT EXISTS houses(" +
+                    "CREATE TABLE IF NOT EXISTS " + HOUSES_TB + "(" +
                             "id VARCHAR(255)," +
                             "owner INTEGER," +
                             "building_type INTEGER," +
@@ -100,7 +100,7 @@ public class Database {
                             ")");
 
             statement.executeUpdate(
-                    "CREATE TABLE IF NOT EXISTS paid_houses(" +
+                    "CREATE TABLE IF NOT EXISTS " + PAID_HOUSES_TB + "(" +
                             "user_id INTEGER," +
                             "house_id VARCHAR(255)," +
                             "house_owner INTEGER," +
@@ -117,81 +117,9 @@ public class Database {
         }
     }
 
-    private static void fetchHouses() {
-        for (RealStateUser realStateUser: RealStateUser.list()) {
-            realStateUser.deleteHouses();
-            for (House house: realStateUser.getHouses()) {
-                house.save();
-            }
-        }
-    }
-
-    public static void addHouse(House newHouse) {
-        houses.add(newHouse);
-    }
-
-    public static IndividualUser getUser(int index) {
-        return users.get(index);
-    }
-
-    public static ArrayList<House> getHouses() {
-        ArrayList<House> houses = getOwnHouses();
-        houses.addAll(getRealStateHouses());
-
-        return houses;
-    }
-
-    public static ArrayList<House> getHouses(int minimumArea, BuildingType buildingType, DealType dealType, float maximumPrice) {
-        ArrayList<House> houses = getOwnHouses(minimumArea, buildingType, dealType, maximumPrice);
-        houses.addAll(getRealStateHouses(minimumArea, buildingType, dealType, maximumPrice));
-
-        return houses;
-    }
-
-    private static House getOwnHouse(String id) throws NotFoundException {
-        for (House house : houses)
-            if(house.getId().equals(id))
-                return house;
-        throw new NotFoundException("House with id " + id + " not found!");
-    }
-
-    public static ArrayList<House> getOwnHouses() {
-        return houses;
-    }
-
-    public static ArrayList<House> getOwnHouses(int minimumArea, BuildingType buildingType, DealType dealType, float maximumPrice) {
-        return sampleFilter(houses, minimumArea, buildingType, dealType, maximumPrice);
-    }
-
-    private static ArrayList<House> getRealStateHouses() {
-        ArrayList<House> allHouses = new ArrayList<>();
-
-        for (RealStateUser realStateUser : realStateUsers)
-            allHouses.addAll(realStateUser.getHouses());
-
-        return allHouses;
-    }
-
-    private static ArrayList<House> getRealStateHouses(int minimumArea, BuildingType buildingType, DealType dealType, float maximumPrice) {
-        ArrayList<House> allHouses = getRealStateHouses();
-        return sampleFilter(allHouses, minimumArea, buildingType, dealType, maximumPrice);
-    }
-
-    private static ArrayList<House> sampleFilter(ArrayList<House> data, int minimumArea, BuildingType buildingType, DealType dealType, float maximumPrice) {
-        ArrayList<House> result = new ArrayList<>();
-
-        for (House house : data) {
-            if (house.getBuildingType() == buildingType) {
-                if (house.getArea() >= minimumArea) {
-                    if (house.getDealType() == dealType) {
-                        if (house.getSellPrice() <= maximumPrice)
-                            result.add(house);
-                    }
-                }
-            }
-        }
-
-        return result;
+    public static void fetchHouses() {
+        for (RealStateUser realStateUser: RealStateUser.list())
+            realStateUser.fetchHouses();
     }
 
     public static House getHouse(HouseOwner houseOwner, String houseId) throws NotFoundException {

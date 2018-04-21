@@ -16,7 +16,7 @@ import java.util.List;
 @WebServlet("/api/v1/login")
 public class Login extends BaseHttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        IndividualUser user = Database.getUser(0);
+        IndividualUser user = IndividualUser.find(1);
 
         List<String> attributes = Arrays.asList("id", "name", "balance");
         JSONObject data = user.toJson(attributes);

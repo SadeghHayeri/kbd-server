@@ -2,10 +2,13 @@ package KBD.models;
 
 import KBD.Config;
 import KBD.Database;
+import KBD.models.enums.DealType;
 import KBD.v1.services.JSONService;
 import org.json.JSONObject;
+import org.omg.CORBA.DATA_CONVERSION;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
@@ -15,12 +18,44 @@ import java.util.ArrayList;
  * Created by sadegh on 2/12/18.
  */
 public class IndividualUser extends User {
-    private final static String TABLE_NAME = "individual_users";
     private String username;
     private String phone;
     private int balance;
     private String password;
     private ArrayList<House> paidHouseQueue;
+
+    public static IndividualUser find(int id) {
+        try {
+            Connection connection = Database.getConnection();
+            Statement statement = connection.createStatement();
+
+            IndividualUser individualUser = null;
+
+            ResultSet resultSet = statement.executeQuery(
+                    String.format(
+                            "SELECT * FROM %s WHERE id = %d",
+                            Database.PAID_HOUSES_TB, id
+                    )
+            );
+
+            if (resultSet != null && resultSet.next()) {
+                individualUser = new IndividualUser(
+                        resultSet.getInt("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("username"),
+                        resultSet.getString("phone"),
+                        resultSet.getInt("balance"),
+                        resultSet.getString("password")
+                );
+            }
+
+            connection.close();
+            return individualUser;
+        } catch (SQLException e) {
+            Logger.error(e.getMessage());
+            return null;
+        }
+    }
 
     private IndividualUser(int id, String name, String username, String phone, int balance, String password) {
         super(id, name);
@@ -47,16 +82,25 @@ public class IndividualUser extends User {
             executeUpdate(
                     String.format(
                             "INSERT INTO %s (name, phone, balance, username, password) VALUES ('%s', '%s', %d, '%s', '%s')",
-                            TABLE_NAME, name, phone, balance, username, password
+                            Database.INDIVIDUAL_USERS_TB, name, phone, balance, username, password
                     )
             );
         else if(!isModified)
             executeUpdate(
                     String.format(
                             "UPDATE %s name = '%s', phone = '%s', balance = '%d', username = '%s', password = '%s' WHERE id = %d",
-                            TABLE_NAME, name, phone, balance, username, password, id
+                            Database.INDIVIDUAL_USERS_TB, name, phone, balance, username, password, id
                     )
             );
+
+        for (House house : paidHouseQueue) {
+            executeUpdate(
+                String.format(
+                        "INSERT INTO %s (user_id, house_id, house_owner) VALUES ('%d', '%s', %d)",
+                        Database.PAID_HOUSES_TB, id, house.getId(), house.getOwner(), username, password
+                )
+            );
+        }
     }
 
     public void addBalance(int balanceValue) {
@@ -66,8 +110,24 @@ public class IndividualUser extends User {
     }
 
     public boolean hasPaid(House house) {
-        return false;
-        //TODO: query
+        boolean paid = false;
+        try {
+            Connection connection = Database.getConnection();
+            Statement statement = connection.createStatement();
+
+            ResultSet resultSet = statement.executeQuery(
+                    String.format(
+                            "SELECT * FROM %s WHERE user_id = %d, house_id = '%s', house_owner = %d",
+                            Database.PAID_HOUSES_TB, id, house.getId(), house.getOwner()
+                    )
+            );
+
+            paid = resultSet != null;
+            connection.close();
+        } catch (SQLException e) {
+            Logger.error(e.getMessage());
+        }
+        return paid;
     }
 
     public boolean pay(House house) {
@@ -82,11 +142,6 @@ public class IndividualUser extends User {
 
         paidHouseQueue.add(house);
         isModified = true;
-
-//        TODO: move it to save method!
-//        executeUpdate(
-//                String.format("INSERT INTO %s VALUES (%d, '%s', %d)", TABLE_NAME, id, house.getId(), house.getOwner())
-//        );
 
         return true;
     }

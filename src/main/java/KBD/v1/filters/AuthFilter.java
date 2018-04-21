@@ -1,6 +1,6 @@
 package KBD.v1.filters;
 
-import KBD.Database;
+import KBD.models.IndividualUser;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
@@ -11,7 +11,7 @@ public class AuthFilter implements Filter {
     public void destroy() {}
 
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws ServletException, IOException {
-        req.setAttribute("user", Database.getUser(0));
+        req.setAttribute("user", IndividualUser.find(1));
         chain.doFilter(req, resp);
     }
 

@@ -59,6 +59,7 @@ public class Charge extends BaseHttpServlet {
 
         if (charge(user.getId(), balanceValue)) {
             user.addBalance(balanceValue);
+            user.save();
             successResponse(response,"افزایش موجودی با موفقیت انجام شد.");
         } else {
             errorResponse(response, HttpServletResponse.SC_SERVICE_UNAVAILABLE, "در حال حاضر سرور بانک در دسترس نمی باشد.");

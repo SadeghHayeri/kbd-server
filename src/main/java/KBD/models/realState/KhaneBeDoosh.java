@@ -21,6 +21,13 @@ public class KhaneBeDoosh extends RealStateUser {
     }
 
     @Override
+    protected long getExpireTimestamp(HttpResponse response) throws IOException {
+        String json = EntityUtils.toString(response.getEntity());
+        JSONObject jsonObj = new JSONObject(json);
+        return jsonObj.getLong("expireTime");
+    }
+
+    @Override
     protected ArrayList<House> parseGetHouseListResponse(HttpResponse response) throws IOException {
         String json = EntityUtils.toString(response.getEntity());
         JSONObject jsonObj = new JSONObject(json);

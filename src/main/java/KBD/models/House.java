@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,6 +33,11 @@ public class House extends BaseModel{
     private int sellPrice;
     private String phone;
     private String description;
+
+    public int getOwner() {
+        return owner;
+    }
+
     private int owner;
 
     public void save() {
@@ -85,39 +91,75 @@ public class House extends BaseModel{
             );
 
             House house = null;
-            if (resultSet != null && resultSet.next()) {
-                if (DealType.parseDealType(resultSet.getInt("deal_type")) == DealType.BUY)
-                    house = new House(
-                            resultSet.getInt("owner"),
-                            resultSet.getString("id"),
-                            BuildingType.parseBuildingType(resultSet.getInt("building_type")),
-                            resultSet.getInt("area"),
-                            resultSet.getString("address"),
-                            resultSet.getInt("sell_price"),
-                            resultSet.getString("phone"),
-                            resultSet.getString("description"),
-                            resultSet.getString("image_URL")
-                    );
-                else
-                    house = new House(
-                            resultSet.getInt("owner"),
-                            resultSet.getString("id"),
-                            BuildingType.parseBuildingType(resultSet.getInt("building_type")),
-                            resultSet.getInt("area"),
-                            resultSet.getString("address"),
-                            resultSet.getInt("base_price"),
-                            resultSet.getInt("rent_price"),
-                            resultSet.getString("phone"),
-                            resultSet.getString("description"),
-                            resultSet.getString("image_URL")
-                    );
-            }
+            if (resultSet.next())
+                house = make(resultSet);
             connection.close();
             return house;
         } catch (SQLException e) {
             Logger.error(e.getMessage());
             return null;
         }
+    }
+
+    public static ArrayList<House> filter(int minimumArea, BuildingType buildingType, DealType dealType, int maximumPrice) {
+        ArrayList<House> houses = new ArrayList<>();
+        try {
+            Connection connection = Database.getConnection();
+            Statement statement = connection.createStatement();
+
+            String price = "sell_price";
+            if (dealType == DealType.RENTAL)
+                price = "base_price";
+
+            ResultSet resultSet = statement.executeQuery(
+                    String.format(
+                            "SELECT * FROM %s WHERE area >= %d and %s <= %d and deal_type = %d and building_type = %d",
+                            TABLE_NAME, minimumArea, price, maximumPrice, dealType.toInteger(), buildingType.toInteger()
+                    )
+            );
+
+            while (resultSet.next()) {
+                houses.add(make(resultSet));
+            }
+            connection.close();
+        } catch (SQLException e) {
+            Logger.error(e.getMessage());
+        }
+        return houses;
+    }
+
+    private static House make(ResultSet resultSet) {
+        House house = null;
+        try {
+            if (DealType.parseDealType(resultSet.getInt("deal_type")) == DealType.BUY)
+                house = new House(
+                        resultSet.getInt("owner"),
+                        resultSet.getString("id"),
+                        BuildingType.parseBuildingType(resultSet.getInt("building_type")),
+                        resultSet.getInt("area"),
+                        resultSet.getString("address"),
+                        resultSet.getInt("sell_price"),
+                        resultSet.getString("phone"),
+                        resultSet.getString("description"),
+                        resultSet.getString("image_URL")
+                );
+            else
+                house = new House(
+                        resultSet.getInt("owner"),
+                        resultSet.getString("id"),
+                        BuildingType.parseBuildingType(resultSet.getInt("building_type")),
+                        resultSet.getInt("area"),
+                        resultSet.getString("address"),
+                        resultSet.getInt("base_price"),
+                        resultSet.getInt("rent_price"),
+                        resultSet.getString("phone"),
+                        resultSet.getString("description"),
+                        resultSet.getString("image_URL")
+                );
+        } catch (SQLException e) {
+            Logger.error(e.getMessage());
+        }
+        return house;
     }
 
     public House(BuildingType buildingType, int area, String address, int sellPrice, String phone, String description) {
@@ -146,6 +188,8 @@ public class House extends BaseModel{
         this.phone = phone;
         this.description = description;
         this.imageURL = imageURL;
+
+        this.isSaved = true;
     }
 
     public House(BuildingType buildingType, int area, String address, int basePrice, int rentPrice, String phone, String description) {
@@ -176,6 +220,8 @@ public class House extends BaseModel{
         this.phone = phone;
         this.description = description;
         this.imageURL = imageURL;
+
+        this.isSaved = true;
     }
 
     public String getId() {

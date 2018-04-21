@@ -54,7 +54,7 @@ public class List extends BaseHttpServlet {
             );
         }
 
-        Database.addHouse(newHouse);
+        newHouse.save();
 
         java.util.List<String> attributes = Arrays.asList(
                 "id", "owner"
@@ -71,11 +71,11 @@ public class List extends BaseHttpServlet {
         if (!(request.getParameter("minimum-area") == null))
             minimumArea = Integer.parseInt(request.getParameter("minimum-area"));
 
-        float maximumPrice = Float.MAX_VALUE;
+        int maximumPrice = Integer.MAX_VALUE;
         if (!(request.getParameter("maximum-price") == null))
-            maximumPrice = Float.parseFloat(request.getParameter("maximum-price"));
+            maximumPrice = Integer.parseInt(request.getParameter("maximum-price"));
 
-        ArrayList<House> houses = Database.getHouses(minimumArea, buildingType, dealType, maximumPrice);
+        ArrayList<House> houses = House.filter(minimumArea, buildingType, dealType, maximumPrice);
         java.util.List<String> attributes = Arrays.asList(
                 "id", "owner", "area", "address", "buildingType", "dealType", "imgURL", "price"
         );

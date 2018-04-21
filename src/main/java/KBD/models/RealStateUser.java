@@ -17,12 +17,26 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by sadegh on 2/12/18.
  */
 abstract public class RealStateUser extends User {
     private String apiAddress;
+
+    private class Fetcher extends TimerTask {
+        private RealStateUser realStateUser;
+        public Fetcher(RealStateUser realStateUser) {
+            super();
+            this.realStateUser = realStateUser;
+        }
+
+        public void run() {
+            realStateUser.fetchHouses();
+        }
+    }
 
     private static final String TABLE_NAME = "realstate_users";
 
@@ -128,12 +142,21 @@ abstract public class RealStateUser extends User {
     public ArrayList<House> getHouses() {
         try {
             HttpResponse response = getHouseList();
+            startScheduler(response);
             return parseGetHouseListResponse(response);
         } catch (Exception e) {
             Logger.error(e.getMessage());
             return new ArrayList<>();
         }
     }
+
+    private void startScheduler(HttpResponse response) throws IOException {
+        Timer timer = new Timer();
+        long expireTimestamp = getExpireTimestamp(response);
+        timer.schedule(new Fetcher(this), expireTimestamp - java.lang.System.currentTimeMillis());
+    }
+
+    protected abstract long getExpireTimestamp(HttpResponse response) throws IOException;
 
     public House getHouse(String id) {
         try {
@@ -168,4 +191,10 @@ abstract public class RealStateUser extends User {
     protected abstract ArrayList<House> parseGetHouseListResponse(HttpResponse response) throws IOException;
     protected abstract House parseGetHouseResponse(HttpResponse response) throws IOException;
     protected abstract String getContentType();
+
+    public void fetchHouses() {
+        deleteHouses();
+        for (House house: getHouses())
+            house.save();
+    }
 }
