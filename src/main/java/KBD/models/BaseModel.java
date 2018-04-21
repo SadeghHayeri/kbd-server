@@ -9,6 +9,7 @@ import java.sql.Statement;
 public class BaseModel {
     protected final static int NOT_INITIATE = -1;
     protected boolean isSaved = false;
+    protected boolean isModified = false;
 
     public static void executeUpdate(String query) {
         try {

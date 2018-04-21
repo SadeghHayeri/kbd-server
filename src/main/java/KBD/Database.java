@@ -28,9 +28,7 @@ public class Database {
 
         createTables();
         seed();
-
         fetchHouses();
-
     }
 
     public static Connection getConnection() throws SQLException {
@@ -198,13 +196,12 @@ public class Database {
 
     public static House getHouse(HouseOwner houseOwner, String houseId) throws NotFoundException {
         if(houseOwner == HouseOwner.SYSTEM) {
-            return getOwnHouse(houseId);
+            return House.find(HouseOwner.SYSTEM, houseId);
         } else {
-            for (RealStateUser realStateUser : realStateUsers) {
-                String realStateName = realStateUser.getName();
-                if(realStateName.equals(houseOwner.toString()))
-                    return realStateUser.getHouse(houseId);
-            }
+            RealStateUser realStateUser = RealStateUser.find(houseOwner.toString());
+            House house = realStateUser.getHouse(houseId);
+            if (house != null)
+                return house;
         }
         throw new NotFoundException("House with id " + houseId + " not found!");
     }

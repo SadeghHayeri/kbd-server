@@ -1,12 +1,17 @@
 package KBD.models;
 
 import KBD.Config;
+import KBD.Database;
 import KBD.models.enums.BuildingType;
 import KBD.models.enums.DealType;
 import KBD.models.enums.HouseOwner;
 import KBD.v1.services.JSONService;
 import org.json.JSONObject;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,27 +20,6 @@ import java.util.UUID;
  */
 public class House extends BaseModel{
     public static final String TABLE_NAME = "houses";
-
-    public void save() {
-        if (dealType == DealType.RENTAL) {
-            executeUpdate(
-                    String.format(
-                            "INSERT INTO %s (id, owner, building_type, area, address, image_URL, deal_type, base_price, rent_price, phone, description) " +
-                                    "VALUES ('%s', %d, %d, %d, '%s', '%s', %d, %d, %d, '%s', '%s')",
-                            TABLE_NAME, id, owner, buildingType.toInteger(), area, address, imageURL, DealType.RENTAL.toInteger(), basePrice, rentPrice, phone, description
-                    )
-            );
-        }
-        else {
-            executeUpdate(
-                    String.format(
-                            "INSERT INTO %s (id, owner, building_type, area, address, image_URL, deal_type, sell_price, phone, description) " +
-                                    "VALUES ('%s', %d, %d, %d, '%s', '%s', %d, %d, '%s', '%s')",
-                            TABLE_NAME, id, owner, buildingType.toInteger(), area, address, imageURL, DealType.BUY.toInteger(), sellPrice, phone, description
-                    )
-            );
-        }
-    }
 
     private String id;
     private BuildingType buildingType;
@@ -49,6 +33,92 @@ public class House extends BaseModel{
     private String phone;
     private String description;
     private int owner;
+
+    public void save() {
+        if(!isSaved) {
+            if (dealType == DealType.RENTAL) {
+                executeUpdate(
+                        String.format(
+                                "INSERT INTO %s (id, owner, building_type, area, address, image_URL, deal_type, base_price, rent_price, phone, description) " +
+                                        "VALUES ('%s', %d, %d, %d, '%s', '%s', %d, %d, %d, '%s', '%s')",
+                                TABLE_NAME, id, owner, buildingType.toInteger(), area, address, imageURL, DealType.RENTAL.toInteger(), basePrice, rentPrice, phone, description
+                        )
+                );
+            } else {
+                executeUpdate(
+                        String.format(
+                                "INSERT INTO %s (id, owner, building_type, area, address, image_URL, deal_type, sell_price, phone, description) " +
+                                        "VALUES ('%s', %d, %d, %d, '%s', '%s', %d, %d, '%s', '%s')",
+                                TABLE_NAME, id, owner, buildingType.toInteger(), area, address, imageURL, DealType.BUY.toInteger(), sellPrice, phone, description
+                        )
+                );
+            }
+        } else if(!isModified) {
+            if (dealType == DealType.RENTAL) {
+                executeUpdate(
+                        String.format(
+                                "UPDATE %s owner = '%s', building_type = %d, area = '%s', address = '%s', image_URL = '%s', deal_type = %d, base_price = %d, rent_price = %d, phone = '%s', description = '%s' WHERE id = '%s'",
+                                TABLE_NAME, owner, buildingType.toInteger(), area, address, imageURL, DealType.RENTAL.toInteger(), basePrice, rentPrice, phone, description, id
+                        )
+                );
+            } else {
+                executeUpdate(
+                        String.format(
+                                "UPDATE %s owner = '%s', building_type = %d, area = %d, address = '%s', image_URL = '%s', deal_type = %d, sell_price = %d, phone = '%s', description = '%s' WHERE id = '%s'",
+                                TABLE_NAME, owner, buildingType.toInteger(), area, address, imageURL, DealType.BUY.toInteger(), sellPrice, phone, description, id
+                        )
+                );
+            }
+        }
+    }
+
+    public static House find(HouseOwner houseOwner, String houseId) {
+        try {
+            Connection connection = Database.getConnection();
+            Statement statement = connection.createStatement();
+
+            ResultSet resultSet = statement.executeQuery(
+                    String.format(
+                            "SELECT * FROM %s WHERE id = '%s' and owner = '%s'",
+                            TABLE_NAME, RealStateUser.find(houseOwner.toString()).getId(), houseId
+                    )
+            );
+
+            House house = null;
+            if (resultSet != null && resultSet.next()) {
+                if (DealType.parseDealType(resultSet.getInt("deal_type")) == DealType.BUY)
+                    house = new House(
+                            resultSet.getInt("owner"),
+                            resultSet.getString("id"),
+                            BuildingType.parseBuildingType(resultSet.getInt("building_type")),
+                            resultSet.getInt("area"),
+                            resultSet.getString("address"),
+                            resultSet.getInt("sell_price"),
+                            resultSet.getString("phone"),
+                            resultSet.getString("description"),
+                            resultSet.getString("image_URL")
+                    );
+                else
+                    house = new House(
+                            resultSet.getInt("owner"),
+                            resultSet.getString("id"),
+                            BuildingType.parseBuildingType(resultSet.getInt("building_type")),
+                            resultSet.getInt("area"),
+                            resultSet.getString("address"),
+                            resultSet.getInt("base_price"),
+                            resultSet.getInt("rent_price"),
+                            resultSet.getString("phone"),
+                            resultSet.getString("description"),
+                            resultSet.getString("image_URL")
+                    );
+            }
+            connection.close();
+            return house;
+        } catch (SQLException e) {
+            Logger.error(e.getMessage());
+            return null;
+        }
+    }
 
     public House(BuildingType buildingType, int area, String address, int sellPrice, String phone, String description) {
         this.dealType = DealType.BUY;
@@ -120,50 +190,22 @@ public class House extends BaseModel{
         return area;
     }
 
-    public String getAddress() {
-        return address;
-    }
-
-    public String getImageURL() {
-        return imageURL;
-    }
-
     public DealType getDealType() {
         return dealType;
-    }
-
-    public int getBasePrice() {
-        return basePrice;
-    }
-
-    public int getRentPrice() {
-        return rentPrice;
     }
 
     public int getSellPrice() {
         return sellPrice;
     }
 
-    public String getPhone() {
-        return phone;
-    }
-
     public String getHiddenPhone() {
         return phone.substring(0, 2) + "*****" + phone.substring(7);
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public int getOwner() {
-        return owner;
     }
 
     public JSONObject toJson (List<String> keys) {
         JSONObject data = new JSONObject();
         data.put("id", id);
-//        data.put("owner", owner.toString());
+        data.put("owner", RealStateUser.find(owner).getName());
         data.put("area", area);
         data.put("address", address);
         data.put("buildingType", buildingType);

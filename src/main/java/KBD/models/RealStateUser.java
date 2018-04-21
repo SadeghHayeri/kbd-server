@@ -39,9 +39,14 @@ abstract public class RealStateUser extends User {
     }
 
     public void save() {
-        executeUpdate(
-                String.format("INSERT INTO %s (name, api_address) VALUES ('%s', '%s')", TABLE_NAME, name, apiAddress)
-        );
+        if(!isSaved)
+            executeUpdate(
+                    String.format("INSERT INTO %s (name, api_address) VALUES ('%s', '%s')", TABLE_NAME, name, apiAddress)
+            );
+        else if(!isModified)
+            executeUpdate(
+                    String.format("UPDATE %s SET name = '%s', api_address = '%s' WHERE id = %d", TABLE_NAME, name, apiAddress, id)
+            );
     }
 
     public void deleteHouses() {
@@ -50,18 +55,17 @@ abstract public class RealStateUser extends User {
         );
     }
 
-    public static RealStateUser find(String name) {
+    private static RealStateUser findByQuery(String query) {
         try {
             Connection connection = Database.getConnection();
             Statement statement = connection.createStatement();
 
-            ResultSet resultSet = statement.executeQuery(
-                    String.format("SELECT * FROM %s WHERE name = '%s'", TABLE_NAME, name)
-            );
+            ResultSet resultSet = statement.executeQuery(query);
 
             RealStateUser realStateUser = null;
             if (resultSet != null && resultSet.next()) {
                 int id = resultSet.getInt("id");
+                String name = resultSet.getString("name");
                 String apiAddress = resultSet.getString("api_address");
                 realStateUser = RealStateUser.make(id, name, apiAddress);
             }
@@ -71,6 +75,14 @@ abstract public class RealStateUser extends User {
             Logger.error(e.getMessage());
             return null;
         }
+    }
+
+    public static RealStateUser find(String name) {
+        return findByQuery(String.format("SELECT * FROM %s WHERE name = '%s'", TABLE_NAME, name));
+    }
+
+    public static RealStateUser find(int id) {
+        return findByQuery(String.format("SELECT * FROM %s WHERE id = %d", TABLE_NAME, id));
     }
 
     public static ArrayList<RealStateUser> list() {
@@ -96,7 +108,7 @@ abstract public class RealStateUser extends User {
         return realStateUsers;
     }
 
-    public static RealStateUser make(int id, String name, String apiAddress) {
+    private static RealStateUser make(int id, String name, String apiAddress) {
         RealStateUser realStateUser = null;
         if (name.equals(HouseOwner.SYSTEM.toString()))
             realStateUser = new System(id, name, apiAddress);
@@ -142,7 +154,6 @@ abstract public class RealStateUser extends User {
 
         return httpClient.execute(get);
     }
-
 
     private HttpResponse getHouseList() throws IOException {
         String url = getHouseListApiAddress();

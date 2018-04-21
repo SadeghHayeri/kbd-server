@@ -20,7 +20,7 @@ public class IndividualUser extends User {
     private String phone;
     private int balance;
     private String password;
-//    private ArrayList<PaidHouse> paidHouses;
+    private ArrayList<House> paidHouseQueue;
 
     private IndividualUser(int id, String name, String username, String phone, int balance, String password) {
         super(id, name);
@@ -28,7 +28,7 @@ public class IndividualUser extends User {
         this.phone = phone;
         this.balance = balance;
         this.password = password;
-        this.paidHouses = new ArrayList<>();
+        this.paidHouseQueue = new ArrayList<>();
 
         this.isSaved = true;
     }
@@ -39,39 +39,33 @@ public class IndividualUser extends User {
         this.phone = phone;
         this.balance = balance;
         this.password = password;
-        this.paidHouses = new ArrayList<>();
+        this.paidHouseQueue = new ArrayList<>();
     }
 
     public void save() {
-        executeUpdate(
-                String.format(
-                        "INSERT INTO %s (name, phone, balance, username, password) VALUES ('%s', '%s', %d, '%s', '%s')",
-                        TABLE_NAME, name, phone, balance, username, password
-                )
-        );
-    }
-
-    public int getBalance() {
-        return balance;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPhone() {
-        return phone;
+        if(!isSaved)
+            executeUpdate(
+                    String.format(
+                            "INSERT INTO %s (name, phone, balance, username, password) VALUES ('%s', '%s', %d, '%s', '%s')",
+                            TABLE_NAME, name, phone, balance, username, password
+                    )
+            );
+        else if(!isModified)
+            executeUpdate(
+                    String.format(
+                            "UPDATE %s name = '%s', phone = '%s', balance = '%d', username = '%s', password = '%s' WHERE id = %d",
+                            TABLE_NAME, name, phone, balance, username, password, id
+                    )
+            );
     }
 
     public void addBalance(int balanceValue) {
+        assert balanceValue >= 0;
         balance += balanceValue;
+        isModified = true;
     }
 
     public boolean hasPaid(House house) {
-//        for (PaidHouse paidHouse : paidHouses)
-//            if(paidHouse.houseOwner == house.getOwner())
-//                if(paidHouse.houseId.equals(house.getId()))
-//                    return true;
         return false;
         //TODO: query
     }
@@ -84,10 +78,15 @@ public class IndividualUser extends User {
             return false;
 
         balance -= Config.HOUSE_OWNER_NUMBER_PRICE;
-        save();
+        isModified = true;
 
-        PaidHouse paidHouse = new PaidHouse(house.getOwner(), house.getId());
-        paidHouse.save();
+        paidHouseQueue.add(house);
+        isModified = true;
+
+//        TODO: move it to save method!
+//        executeUpdate(
+//                String.format("INSERT INTO %s VALUES (%d, '%s', %d)", TABLE_NAME, id, house.getId(), house.getOwner())
+//        );
 
         return true;
     }
