@@ -4,8 +4,6 @@ import KBD.models.House;
 import KBD.models.RealStateUser;
 import KBD.models.enums.BuildingType;
 import KBD.models.enums.HouseOwner;
-import org.apache.http.HttpResponse;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -22,16 +20,14 @@ public class KhaneBeDoosh extends RealStateUser {
     }
 
     @Override
-    protected long getExpireTimestamp(HttpResponse response) throws IOException {
-        String json = EntityUtils.toString(response.getEntity());
-        JSONObject jsonObj = new JSONObject(json);
+    protected long getExpireTimestamp(String data) throws IOException {
+        JSONObject jsonObj = new JSONObject(data);
         return jsonObj.getLong("expireTime");
     }
 
     @Override
-    protected ArrayList<House> parseGetHouseListResponse(HttpResponse response) throws IOException {
-        String json = EntityUtils.toString(response.getEntity());
-        JSONObject jsonObj = new JSONObject(json);
+    protected ArrayList<House> parseGetHouseListResponse(String rData) throws IOException {
+        JSONObject jsonObj = new JSONObject(rData);
 
         ArrayList<House> houses = new ArrayList<>();
 
@@ -76,9 +72,8 @@ public class KhaneBeDoosh extends RealStateUser {
     }
 
     @Override
-    protected House parseGetHouseResponse(HttpResponse response) throws IOException {
-        String json = EntityUtils.toString(response.getEntity());
-        JSONObject jsonObj = new JSONObject(json);
+    protected House parseGetHouseResponse(String data) throws IOException {
+        JSONObject jsonObj = new JSONObject(data);
 
         JSONObject house = jsonObj.getJSONObject("data");
         int dealType = house.getInt("dealType");

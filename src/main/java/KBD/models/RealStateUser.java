@@ -10,8 +10,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 
-import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -35,7 +35,9 @@ abstract public class RealStateUser extends User {
         }
 
         public void run() {
+            Logger.info("Scheduler starts");
             realStateUser.fetchHouses();
+            Logger.info("Scheduler ends");
         }
     }
 
@@ -152,26 +154,27 @@ abstract public class RealStateUser extends User {
     public ArrayList<House> getHouses() {
         try {
             HttpResponse response = getHouseList();
-            //  startScheduler(response);
-            return parseGetHouseListResponse(response);
+            String data = EntityUtils.toString(response.getEntity());
+            startScheduler(data);
+            return parseGetHouseListResponse(data);
         } catch (Exception e) {
             Logger.error(e.getMessage());
             return new ArrayList<>();
         }
     }
 
-    private void startScheduler(HttpResponse response) throws IOException {
+    private void startScheduler(String data) throws IOException {
         Timer timer = new Timer();
-        long expireTimestamp = getExpireTimestamp(response);
-        timer.schedule(new Fetcher(this), expireTimestamp - java.lang.System.currentTimeMillis());
+        long delay = getExpireTimestamp(data) - java.lang.System.currentTimeMillis();
+        Logger.info("Scheduler will run " + delay + " ms later");
+        timer.schedule(new Fetcher(this), delay);
     }
-
-    protected abstract long getExpireTimestamp(HttpResponse response) throws IOException;
 
     public House getHouse(String id) {
         try {
             HttpResponse response = getSingleHouse(id);
-            return parseGetHouseResponse(response);
+            String data = EntityUtils.toString(response.getEntity());
+            return parseGetHouseResponse(data);
         } catch (Exception e) {
             Logger.error(e.getMessage());
             throw new NotFoundException("realstate bad response, House not found!");
@@ -198,9 +201,10 @@ abstract public class RealStateUser extends User {
         return httpClient.execute(get);
     }
 
-    protected abstract ArrayList<House> parseGetHouseListResponse(HttpResponse response) throws IOException;
-    protected abstract House parseGetHouseResponse(HttpResponse response) throws IOException;
+    protected abstract ArrayList<House> parseGetHouseListResponse(String data) throws IOException;
+    protected abstract House parseGetHouseResponse(String data) throws IOException;
     protected abstract String getContentType();
+    protected abstract long getExpireTimestamp(String data) throws IOException;
 
     public void fetchHouses() {
         deleteHouses();

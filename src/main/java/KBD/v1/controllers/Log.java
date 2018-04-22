@@ -1,6 +1,5 @@
 package KBD.v1.controllers;
 
-import KBD.Database;
 import KBD.models.Logger;
 
 import javax.servlet.ServletException;
@@ -20,7 +19,10 @@ public class Log extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html");
 
-        System.out.println(Database.houses.size());
+        // calling the DB to run static methods
+        try {
+            Class.forName("KBD.Database");
+        } catch (ClassNotFoundException ignored) {}
 
         PrintWriter out = response.getWriter();
         out.println(Logger.getLog());

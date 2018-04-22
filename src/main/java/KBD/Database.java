@@ -17,9 +17,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 public class Database {
-    public static ArrayList<House> houses = new ArrayList<>();
-    private static ArrayList<IndividualUser> users = new ArrayList<>();
-    private static ArrayList<RealStateUser> realStateUsers = new ArrayList<>();
     private static BasicDataSource source = new org.apache.commons.dbcp.BasicDataSource();
 
     public final static String INDIVIDUAL_USERS_TB = "individual_users";
@@ -40,6 +37,10 @@ public class Database {
     }
 
     public static void seed() {
+        ArrayList<House> houses = new ArrayList<>();
+        ArrayList<IndividualUser> users = new ArrayList<>();
+        ArrayList<RealStateUser> realStateUsers = new ArrayList<>();
+
         users.add(new IndividualUser("بهنام همایون", "behnam_homayoon", "09123456789", 0, "123"));
         realStateUsers.add(new System());
         realStateUsers.add(new KhaneBeDoosh("http://139.59.151.5:6664/khaneBeDoosh/v2"));

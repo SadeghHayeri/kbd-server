@@ -18,22 +18,22 @@ public class System extends RealStateUser {
     }
 
     @Override
-    protected long getExpireTimestamp(HttpResponse response) throws IOException {
-        return 0;
-    }
-
-    @Override
-    protected ArrayList<House> parseGetHouseListResponse(HttpResponse response) throws IOException {
+    protected ArrayList<House> parseGetHouseListResponse(String data) throws IOException {
         return null;
     }
 
     @Override
-    protected House parseGetHouseResponse(HttpResponse response) throws IOException {
+    protected House parseGetHouseResponse(String data) throws IOException {
         return null;
     }
 
     @Override
     protected String getContentType() {
         return null;
+    }
+
+    @Override
+    protected long getExpireTimestamp(String data) throws IOException {
+        return 0;
     }
 }
