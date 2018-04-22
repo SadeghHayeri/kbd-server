@@ -44,6 +44,7 @@ public class Pay extends BaseHttpServlet {
         if (user.hasPaid(house)) {
             errorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "شما قبلا این پرداخت را انجام داده‌اید.");
         } else if (user.pay(house)) {
+            user.save();
             java.util.List<String> attributes = Arrays.asList(
                     "phone", "hasBoughtPhone"
             );

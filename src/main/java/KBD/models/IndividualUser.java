@@ -34,7 +34,7 @@ public class IndividualUser extends User {
             ResultSet resultSet = statement.executeQuery(
                     String.format(
                             "SELECT * FROM %s WHERE id = %d",
-                            Database.PAID_HOUSES_TB, id
+                            Database.INDIVIDUAL_USERS_TB, id
                     )
             );
 
@@ -85,10 +85,10 @@ public class IndividualUser extends User {
                             Database.INDIVIDUAL_USERS_TB, name, phone, balance, username, password
                     )
             );
-        else if(!isModified)
+        else if(isModified)
             executeUpdate(
                     String.format(
-                            "UPDATE %s name = '%s', phone = '%s', balance = '%d', username = '%s', password = '%s' WHERE id = %d",
+                            "UPDATE %s SET name = '%s', phone = '%s', balance = %d, username = '%s', password = '%s' WHERE id = %d",
                             Database.INDIVIDUAL_USERS_TB, name, phone, balance, username, password, id
                     )
             );
@@ -96,8 +96,8 @@ public class IndividualUser extends User {
         for (House house : paidHouseQueue) {
             executeUpdate(
                 String.format(
-                        "INSERT INTO %s (user_id, house_id, house_owner) VALUES ('%d', '%s', %d)",
-                        Database.PAID_HOUSES_TB, id, house.getId(), house.getOwner(), username, password
+                        "INSERT INTO %s (user_id, house_id, house_owner) VALUES (%d, '%s', %d)",
+                        Database.PAID_HOUSES_TB, id, house.getId(), house.getOwner()
                 )
             );
         }
@@ -117,12 +117,12 @@ public class IndividualUser extends User {
 
             ResultSet resultSet = statement.executeQuery(
                     String.format(
-                            "SELECT * FROM %s WHERE user_id = %d, house_id = '%s', house_owner = %d",
+                            "SELECT * FROM %s WHERE user_id = %d and house_id = '%s' and house_owner = %d",
                             Database.PAID_HOUSES_TB, id, house.getId(), house.getOwner()
                     )
             );
 
-            paid = resultSet != null;
+            paid = resultSet.next();
             connection.close();
         } catch (SQLException e) {
             Logger.error(e.getMessage());
@@ -138,8 +138,6 @@ public class IndividualUser extends User {
             return false;
 
         balance -= Config.HOUSE_OWNER_NUMBER_PRICE;
-        isModified = true;
-
         paidHouseQueue.add(house);
         isModified = true;
 

@@ -3,6 +3,7 @@ package KBD.models.realState;
 import KBD.models.House;
 import KBD.models.RealStateUser;
 import KBD.models.enums.BuildingType;
+import KBD.models.enums.HouseOwner;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
@@ -12,12 +13,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class KhaneBeDoosh extends RealStateUser {
-    public KhaneBeDoosh(int id, String name, String apiAddress) {
-        super(id, name, apiAddress);
+    public KhaneBeDoosh(int id, String apiAddress) {
+        super(id, HouseOwner.KHANE_BE_DOOSH.toString(), apiAddress);
     }
 
-    public KhaneBeDoosh(String name, String apiAddress) {
-        super(name, apiAddress);
+    public KhaneBeDoosh(String apiAddress) {
+        super(HouseOwner.KHANE_BE_DOOSH.toString(), apiAddress);
     }
 
     @Override
@@ -35,7 +36,7 @@ public class KhaneBeDoosh extends RealStateUser {
         ArrayList<House> houses = new ArrayList<>();
 
         JSONArray data = jsonObj.getJSONArray("data");
-        for(Object object:  data){
+        for(Object object: data){
             JSONObject house = (JSONObject) object;
             int dealType = house.getInt("dealType");
             if (dealType == 0)
@@ -45,11 +46,12 @@ public class KhaneBeDoosh extends RealStateUser {
                         house.getString("id"),
                         (house.getString("buildingType").equals("آپارتمان") ? BuildingType.APARTMENT : BuildingType.VILLA),
                         house.getInt("area"),
-                        "",
+                        house.getString("address"),
                         house.getJSONObject("price").getInt("sellPrice"),
                         "",
                         "",
-                        house.getString("imageURL")
+                        house.getString("imageURL"),
+                        false
                     )
                 );
             else
@@ -59,12 +61,13 @@ public class KhaneBeDoosh extends RealStateUser {
                         house.getString("id"),
                         (house.getString("buildingType").equals("آپارتمان") ? BuildingType.APARTMENT : BuildingType.VILLA),
                         house.getInt("area"),
-                        "",
+                        house.getString("address"),
                         house.getJSONObject("price").getInt("basePrice"),
                         house.getJSONObject("price").getInt("rentPrice"),
                         "",
                         "",
-                        house.getString("imageURL")
+                        house.getString("imageURL"),
+                        false
                     )
                 );
         }
@@ -89,7 +92,8 @@ public class KhaneBeDoosh extends RealStateUser {
                 house.getJSONObject("price").getInt("sellPrice"),
                 house.getString("phone"),
                 house.getString("description"),
-                house.getString("imageURL")
+                house.getString("imageURL"),
+                false
             );
         else
             return new House(
@@ -102,7 +106,8 @@ public class KhaneBeDoosh extends RealStateUser {
                 house.getJSONObject("price").getInt("rentPrice"),
                 house.getString("phone"),
                 house.getString("description"),
-                house.getString("imageURL")
+                house.getString("imageURL"),
+                false
             );
     }
 

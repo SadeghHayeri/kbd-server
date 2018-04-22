@@ -1,6 +1,7 @@
 package KBD;
 
 import KBD.models.Logger;
+import KBD.models.realState.System;
 import KBD.v1.Exceptions.NotFoundException;
 import KBD.models.House;
 import KBD.models.IndividualUser;
@@ -29,6 +30,9 @@ public class Database {
     static {
         source.setDriverClassName("org.sqlite.JDBC");
         source.setUrl("jdbc:sqlite:database.db");
+
+        createTables();
+        fetchHouses();
     }
 
     public static Connection getConnection() throws SQLException {
@@ -37,7 +41,8 @@ public class Database {
 
     public static void seed() {
         users.add(new IndividualUser("بهنام همایون", "behnam_homayoon", "09123456789", 0, "123"));
-        realStateUsers.add(new KhaneBeDoosh("khane-be-doosh", "http://acm.ut.ac.ir/khaneBeDoosh/v2"));
+        realStateUsers.add(new System());
+        realStateUsers.add(new KhaneBeDoosh("http://139.59.151.5:6664/khaneBeDoosh/v2"));
 
         houses.add(new House(BuildingType.VILLA, 100, "be to che", 1500, "09333564931", "nadare"));
         houses.add(new House(BuildingType.APARTMENT, 102, "address", 100, "09333564932", "nadare"));
@@ -49,14 +54,14 @@ public class Database {
         houses.add(new House(BuildingType.APARTMENT, 1000, "khoone", 2500, 200, "09333564933", "nadare"));
         houses.add(new House(BuildingType.VILLA, 50, "salam", 1550, 150, "09333564934", "nadare"));
 
-        for (House house: houses)
-            house.save();
+        for (RealStateUser realStateUser: realStateUsers)
+            realStateUser.save();
 
         for (IndividualUser user: users)
             user.save();
 
-        for (RealStateUser realStateUser: realStateUsers)
-            realStateUser.save();
+        for (House house: houses)
+            house.save();
     }
 
     public static void createTables() {
@@ -106,7 +111,7 @@ public class Database {
                             "house_owner INTEGER," +
                             "PRIMARY KEY (user_id, house_id, house_owner)" +
                             "FOREIGN KEY (user_id) REFERENCES individual_users(id) ON DELETE CASCADE," +
-                            "FOREIGN KEY (house_id, house_owner) REFERENCES houses(id, owner) ON DELETE CASCADE," +
+                            "FOREIGN KEY (house_id, house_owner) REFERENCES houses(id, owner)," +
                             "FOREIGN KEY (house_owner) REFERENCES realstate_users(id) ON DELETE CASCADE" +
                             ")");
 

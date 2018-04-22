@@ -3,6 +3,7 @@ package KBD.v1.controllers.house;
 import KBD.Database;
 import KBD.models.House;
 import KBD.models.IndividualUser;
+import KBD.models.Logger;
 import KBD.models.enums.HouseOwner;
 import KBD.v1.Exceptions.NotFoundException;
 import KBD.v1.controllers.BaseHttpServlet;

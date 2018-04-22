@@ -20,8 +20,6 @@ import java.util.UUID;
  * Created by sadegh on 2/12/18.
  */
 public class House extends BaseModel{
-    public static final String TABLE_NAME = "houses";
-
     private String id;
     private BuildingType buildingType;
     private int area;
@@ -47,7 +45,7 @@ public class House extends BaseModel{
                         String.format(
                                 "INSERT INTO %s (id, owner, building_type, area, address, image_URL, deal_type, base_price, rent_price, phone, description) " +
                                         "VALUES ('%s', %d, %d, %d, '%s', '%s', %d, %d, %d, '%s', '%s')",
-                                TABLE_NAME, id, owner, buildingType.toInteger(), area, address, imageURL, DealType.RENTAL.toInteger(), basePrice, rentPrice, phone, description
+                                Database.HOUSES_TB, id, owner, buildingType.toInteger(), area, address, imageURL, DealType.RENTAL.toInteger(), basePrice, rentPrice, phone, description
                         )
                 );
             } else {
@@ -55,23 +53,23 @@ public class House extends BaseModel{
                         String.format(
                                 "INSERT INTO %s (id, owner, building_type, area, address, image_URL, deal_type, sell_price, phone, description) " +
                                         "VALUES ('%s', %d, %d, %d, '%s', '%s', %d, %d, '%s', '%s')",
-                                TABLE_NAME, id, owner, buildingType.toInteger(), area, address, imageURL, DealType.BUY.toInteger(), sellPrice, phone, description
+                                Database.HOUSES_TB, id, owner, buildingType.toInteger(), area, address, imageURL, DealType.BUY.toInteger(), sellPrice, phone, description
                         )
                 );
             }
-        } else if(!isModified) {
+        } else if(isModified) {
             if (dealType == DealType.RENTAL) {
                 executeUpdate(
                         String.format(
-                                "UPDATE %s owner = '%s', building_type = %d, area = '%s', address = '%s', image_URL = '%s', deal_type = %d, base_price = %d, rent_price = %d, phone = '%s', description = '%s' WHERE id = '%s'",
-                                TABLE_NAME, owner, buildingType.toInteger(), area, address, imageURL, DealType.RENTAL.toInteger(), basePrice, rentPrice, phone, description, id
+                                "UPDATE %s owner = %d, building_type = %d, area = '%s', address = '%s', image_URL = '%s', deal_type = %d, base_price = %d, rent_price = %d, phone = '%s', description = '%s' WHERE id = '%s'",
+                                Database.HOUSES_TB, owner, buildingType.toInteger(), area, address, imageURL, DealType.RENTAL.toInteger(), basePrice, rentPrice, phone, description, id
                         )
                 );
             } else {
                 executeUpdate(
                         String.format(
-                                "UPDATE %s owner = '%s', building_type = %d, area = %d, address = '%s', image_URL = '%s', deal_type = %d, sell_price = %d, phone = '%s', description = '%s' WHERE id = '%s'",
-                                TABLE_NAME, owner, buildingType.toInteger(), area, address, imageURL, DealType.BUY.toInteger(), sellPrice, phone, description, id
+                                "UPDATE %s owner = %d, building_type = %d, area = %d, address = '%s', image_URL = '%s', deal_type = %d, sell_price = %d, phone = '%s', description = '%s' WHERE id = '%s'",
+                                Database.HOUSES_TB, owner, buildingType.toInteger(), area, address, imageURL, DealType.BUY.toInteger(), sellPrice, phone, description, id
                         )
                 );
             }
@@ -85,8 +83,8 @@ public class House extends BaseModel{
 
             ResultSet resultSet = statement.executeQuery(
                     String.format(
-                            "SELECT * FROM %s WHERE id = '%s' and owner = '%s'",
-                            TABLE_NAME, RealStateUser.find(houseOwner.toString()).getId(), houseId
+                            "SELECT * FROM %s WHERE owner = %d and id = '%s'",
+                            Database.HOUSES_TB, RealStateUser.find(houseOwner.toString()).getId(), houseId
                     )
             );
 
@@ -114,7 +112,7 @@ public class House extends BaseModel{
             ResultSet resultSet = statement.executeQuery(
                     String.format(
                             "SELECT * FROM %s WHERE area >= %d and %s <= %d and deal_type = %d and building_type = %d",
-                            TABLE_NAME, minimumArea, price, maximumPrice, dealType.toInteger(), buildingType.toInteger()
+                            Database.HOUSES_TB, minimumArea, price, maximumPrice, dealType.toInteger(), buildingType.toInteger()
                     )
             );
 
@@ -141,7 +139,8 @@ public class House extends BaseModel{
                         resultSet.getInt("sell_price"),
                         resultSet.getString("phone"),
                         resultSet.getString("description"),
-                        resultSet.getString("image_URL")
+                        resultSet.getString("image_URL"),
+                        true
                 );
             else
                 house = new House(
@@ -154,7 +153,8 @@ public class House extends BaseModel{
                         resultSet.getInt("rent_price"),
                         resultSet.getString("phone"),
                         resultSet.getString("description"),
-                        resultSet.getString("image_URL")
+                        resultSet.getString("image_URL"),
+                        true
                 );
         } catch (SQLException e) {
             Logger.error(e.getMessage());
@@ -165,7 +165,7 @@ public class House extends BaseModel{
     public House(BuildingType buildingType, int area, String address, int sellPrice, String phone, String description) {
         this.dealType = DealType.BUY;
 
-        this.owner = RealStateUser.find(HouseOwner.SYSTEM.toString()).getId();
+        this.owner = Config.SYSTEM_USER_ID;
         this.id = UUID.randomUUID().toString();
         this.buildingType = buildingType;
         this.area = area;
@@ -176,7 +176,7 @@ public class House extends BaseModel{
         this.imageURL = Config.NO_IMAGE_PATH;
     }
 
-    public House(int owner, String id, BuildingType buildingType, int area, String address, int sellPrice, String phone, String description, String imageURL) {
+    public House(int owner, String id, BuildingType buildingType, int area, String address, int sellPrice, String phone, String description, String imageURL, boolean isSaved) {
         this.dealType = DealType.BUY;
 
         this.owner = owner;
@@ -189,13 +189,13 @@ public class House extends BaseModel{
         this.description = description;
         this.imageURL = imageURL;
 
-        this.isSaved = true;
+        this.isSaved = isSaved;
     }
 
     public House(BuildingType buildingType, int area, String address, int basePrice, int rentPrice, String phone, String description) {
         this.dealType = DealType.RENTAL;
 
-        this.owner = RealStateUser.find(HouseOwner.SYSTEM.toString()).getId();
+        this.owner = Config.SYSTEM_USER_ID;
         this.id = UUID.randomUUID().toString();
         this.buildingType = buildingType;
         this.area = area;
@@ -207,7 +207,7 @@ public class House extends BaseModel{
         this.imageURL = Config.NO_IMAGE_PATH;
     }
 
-    public House(int owner, String id, BuildingType buildingType, int area, String address, int basePrice, int rentPrice, String phone, String description, String imageURL) {
+    public House(int owner, String id, BuildingType buildingType, int area, String address, int basePrice, int rentPrice, String phone, String description, String imageURL, boolean isSaved) {
         this.dealType = DealType.RENTAL;
 
         this.owner = owner;
@@ -221,7 +221,7 @@ public class House extends BaseModel{
         this.description = description;
         this.imageURL = imageURL;
 
-        this.isSaved = true;
+        this.isSaved = isSaved;
     }
 
     public String getId() {

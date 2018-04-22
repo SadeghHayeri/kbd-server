@@ -11,6 +11,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 
+import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -38,8 +39,6 @@ abstract public class RealStateUser extends User {
         }
     }
 
-    private static final String TABLE_NAME = "realstate_users";
-
     public RealStateUser(int id, String name, String apiAddress) {
         super(id, name);
         this.apiAddress = apiAddress;
@@ -55,17 +54,23 @@ abstract public class RealStateUser extends User {
     public void save() {
         if(!isSaved)
             executeUpdate(
-                    String.format("INSERT INTO %s (name, api_address) VALUES ('%s', '%s')", TABLE_NAME, name, apiAddress)
+                    String.format(
+                            "INSERT INTO %s (name, api_address) VALUES ('%s', '%s')",
+                            Database.REALSTATE_USERS_TB, name, apiAddress
+                    )
             );
-        else if(!isModified)
+        else if(isModified)
             executeUpdate(
-                    String.format("UPDATE %s SET name = '%s', api_address = '%s' WHERE id = %d", TABLE_NAME, name, apiAddress, id)
+                    String.format(
+                            "UPDATE %s SET name = '%s', api_address = '%s' WHERE id = %d",
+                            Database.REALSTATE_USERS_TB, name, apiAddress, id
+                    )
             );
     }
 
     public void deleteHouses() {
         executeUpdate(
-                String.format("DELETE FROM %s WHERE owner == %d", House.TABLE_NAME, id)
+                String.format("DELETE FROM %s WHERE owner = %d", Database.HOUSES_TB, id)
         );
     }
 
@@ -92,11 +97,13 @@ abstract public class RealStateUser extends User {
     }
 
     public static RealStateUser find(String name) {
-        return findByQuery(String.format("SELECT * FROM %s WHERE name = '%s'", TABLE_NAME, name));
+        return findByQuery(
+                String.format(
+                        "SELECT * FROM %s WHERE name = '%s'", Database.REALSTATE_USERS_TB, name));
     }
 
     public static RealStateUser find(int id) {
-        return findByQuery(String.format("SELECT * FROM %s WHERE id = %d", TABLE_NAME, id));
+        return findByQuery(String.format("SELECT * FROM %s WHERE id = %d", Database.REALSTATE_USERS_TB, id));
     }
 
     public static ArrayList<RealStateUser> list() {
@@ -106,7 +113,10 @@ abstract public class RealStateUser extends User {
             Statement statement = connection.createStatement();
 
             ResultSet resultSet = statement.executeQuery(
-                    String.format("SELECT * FROM %s WHERE name != '%s'", TABLE_NAME, HouseOwner.SYSTEM.toString())
+                    String.format(
+                            "SELECT * FROM %s WHERE name != '%s'",
+                            Database.REALSTATE_USERS_TB, HouseOwner.SYSTEM.toString()
+                    )
             );
 
             if (resultSet != null && resultSet.next()) {
@@ -125,9 +135,9 @@ abstract public class RealStateUser extends User {
     private static RealStateUser make(int id, String name, String apiAddress) {
         RealStateUser realStateUser = null;
         if (name.equals(HouseOwner.SYSTEM.toString()))
-            realStateUser = new System(id, name, apiAddress);
+            realStateUser = new System(id);
         else if (name.equals(HouseOwner.KHANE_BE_DOOSH.toString()))
-            realStateUser = new KhaneBeDoosh(id, name, apiAddress);
+            realStateUser = new KhaneBeDoosh(id, apiAddress);
         return realStateUser;
     }
 
@@ -142,7 +152,7 @@ abstract public class RealStateUser extends User {
     public ArrayList<House> getHouses() {
         try {
             HttpResponse response = getHouseList();
-            startScheduler(response);
+            //  startScheduler(response);
             return parseGetHouseListResponse(response);
         } catch (Exception e) {
             Logger.error(e.getMessage());

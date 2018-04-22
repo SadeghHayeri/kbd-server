@@ -2,14 +2,19 @@ package KBD.models.realState;
 
 import KBD.models.House;
 import KBD.models.RealStateUser;
+import KBD.models.enums.HouseOwner;
 import org.apache.http.HttpResponse;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class System extends RealStateUser {
-    public System(int id, String name, String apiAddress) {
-        super(id, name, apiAddress);
+    public System() {
+        super(HouseOwner.SYSTEM.toString(), "");
+    }
+
+    public System(int id) {
+        super(id, HouseOwner.SYSTEM.toString(), "");
     }
 
     @Override
