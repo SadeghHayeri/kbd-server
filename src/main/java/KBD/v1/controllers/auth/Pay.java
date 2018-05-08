@@ -20,8 +20,8 @@ import java.util.List;
 public class Pay extends BaseHttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         checkAuth(request);
-
         IndividualUser user = (IndividualUser) request.getAttribute("user");
+
         JSONObject data = parseJsonData(request);
         jsonValidation(data, Arrays.asList("owner", "id"));
 
