@@ -8,5 +8,5 @@ public class Config {
     public static final int SUCCESS_RESPONSE_STATUS_CODE = 200;
     public static final int SYSTEM_USER_ID = 1;
     public static final String SECRET = "mozi-amoo";
-    public static final int EXPIRE_TIME = 5 * 1000;
+    public static final int EXPIRE_TIME = 60 * 60 * 1000;
 }

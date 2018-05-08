@@ -13,11 +13,10 @@ import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 @WebFilter("/api/v1/*")
-public class FieldsFilter implements Filter {
+public class FieldsFilter extends BaseFilter {
 
     public class CharResponseWrapper extends HttpServletResponseWrapper {
         private CharArrayWriter output;
@@ -64,7 +63,6 @@ public class FieldsFilter implements Filter {
                         for (int i = 0; i < realArray.length(); i++) {
                             JSONObject realItem = realArray.getJSONObject(i);
                             JSONObject filteredItem = JSONService.keepAllowedKeys(realItem, items);
-//
                             targetArray.put(filteredItem);
                         }
                         targetResponse.put("data", targetArray);
@@ -73,12 +71,8 @@ public class FieldsFilter implements Filter {
 
                 response.getWriter().write(targetResponse.toString());
             } catch (Exception e) {
-                JSONObject data = new JSONObject();
-                data.put("code", HttpServletResponse.SC_NOT_IMPLEMENTED);
-                data.put("message", "خطای سیستمی: این نوع پارامترها پشتیبانی نمی شوند.");
-
-                response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
-                response.getWriter().write(data.toString());
+                String message = "خطای سیستمی: این نوع پارامترها پشتیبانی نمی شوند.";
+                errorResponse(response, HttpServletResponse.SC_NOT_IMPLEMENTED, message);
             }
         }
     }
