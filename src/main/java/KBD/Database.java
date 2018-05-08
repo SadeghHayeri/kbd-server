@@ -26,7 +26,7 @@ public class Database {
 
     static {
         source.setDriverClassName("org.sqlite.JDBC");
-        source.setUrl("jdbc:sqlite:database.db");
+        source.setUrl("jdbc:sqlite:new_database.db");
 
         createTables();
         fetchHouses();
@@ -41,7 +41,7 @@ public class Database {
         ArrayList<IndividualUser> users = new ArrayList<>();
         ArrayList<RealStateUser> realStateUsers = new ArrayList<>();
 
-        users.add(new IndividualUser("بهنام همایون", "behnam_homayoon", "09123456789", 0, "123"));
+        users.add(new IndividualUser("بهنام همایون", "admin", "09123456789", 0, "123"));
         realStateUsers.add(new System());
         realStateUsers.add(new KhaneBeDoosh("http://139.59.151.5:6664/khaneBeDoosh/v2"));
 

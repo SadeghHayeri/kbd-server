@@ -2,6 +2,7 @@ package KBD.v1.controllers.auth;
 
 import KBD.models.IndividualUser;
 import KBD.v1.controllers.BaseHttpServlet;
+import org.apache.http.HttpResponse;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
@@ -19,6 +20,7 @@ public class Profile extends BaseHttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        checkAuth(request);
         IndividualUser user = (IndividualUser) request.getAttribute("user");
 
         List<String> attributes = Arrays.asList("id", "name", "username", "phone", "balance");

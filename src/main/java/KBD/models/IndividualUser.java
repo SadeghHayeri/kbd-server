@@ -2,10 +2,9 @@ package KBD.models;
 
 import KBD.Config;
 import KBD.Database;
-import KBD.models.enums.DealType;
 import KBD.v1.services.JSONService;
+import KBD.v1.services.SecurityService;
 import org.json.JSONObject;
-import org.omg.CORBA.DATA_CONVERSION;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -73,8 +72,40 @@ public class IndividualUser extends User {
         this.username = username;
         this.phone = phone;
         this.balance = balance;
-        this.password = password;
+        this.password = SecurityService.MD5(password);
         this.paidHouseQueue = new ArrayList<>();
+    }
+
+    public static IndividualUser find(String username, String password) {
+        IndividualUser user = null;
+        try {
+            Connection connection = Database.getConnection();
+            Statement statement = connection.createStatement();
+
+            String hashedPassword = SecurityService.MD5(password);
+            ResultSet resultSet = statement.executeQuery(
+                    String.format(
+                            "SELECT * FROM %s WHERE username = '%s' and password = '%s'",
+                            Database.INDIVIDUAL_USERS_TB, username, hashedPassword
+                    )
+            );
+
+            if(resultSet.next()) {
+                user = new IndividualUser(
+                        resultSet.getInt("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("username"),
+                        resultSet.getString("phone"),
+                        resultSet.getInt("balance"),
+                        resultSet.getString("password")
+                );
+            }
+
+            connection.close();
+        } catch (SQLException e) {
+            Logger.error(e.getMessage());
+        }
+        return user;
     }
 
     public void save() {

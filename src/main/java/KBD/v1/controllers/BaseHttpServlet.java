@@ -1,6 +1,7 @@
 package KBD.v1.controllers;
 
 import KBD.v1.Exceptions.FieldNotFoundException;
+import KBD.v1.Exceptions.NoAuthenticationException;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -13,9 +14,11 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import static KBD.Config.ARRAY_TYPE_DEFAULT_NAME;
-
 public class BaseHttpServlet extends HttpServlet {
+    protected void checkAuth(HttpServletRequest request) {
+        if (request.getAttribute("user") == null)
+            throw new NoAuthenticationException();
+    }
 
     protected JSONObject parseJsonData(HttpServletRequest request) throws IOException {
         String jsonString = IOUtils.toString(request.getInputStream());

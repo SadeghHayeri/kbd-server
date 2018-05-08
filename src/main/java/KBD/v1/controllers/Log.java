@@ -20,9 +20,10 @@ public class Log extends HttpServlet {
         response.setContentType("text/html");
 
         // calling the DB to run static methods
-        try {
+        /*try {
             Class.forName("KBD.Database");
-        } catch (ClassNotFoundException ignored) {}
+        } catch (ClassNotFoundException ignored) {}*/
+
 
         PrintWriter out = response.getWriter();
         out.println(Logger.getLog());
