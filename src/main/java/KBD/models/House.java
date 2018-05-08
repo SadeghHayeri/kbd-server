@@ -275,7 +275,7 @@ public class House extends BaseModel{
     public JSONObject toJson (List<String> keys, IndividualUser user) {
         JSONObject data = toJson(keys);
 
-        if (user.hasPaid(this)) {
+        if (user != null && user.hasPaid(this)) {
             data.put("phone", phone);
             data.put("hasBoughtPhone", true);
         } else {
