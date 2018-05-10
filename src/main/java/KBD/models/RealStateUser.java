@@ -6,6 +6,7 @@ import KBD.models.enums.HouseOwner;
 import KBD.models.realState.KhaneBeDoosh;
 import KBD.models.realState.System;
 import KBD.v1.Exceptions.NotFoundException;
+import KBD.v1.services.SecurityService;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -13,10 +14,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -54,26 +52,39 @@ abstract public class RealStateUser extends User {
     }
 
     public void save() {
-        if(!isSaved)
-            executeUpdate(
-                    String.format(
-                            "INSERT INTO %s (name, api_address) VALUES ('%s', '%s')",
-                            Database.REALSTATE_USERS_TB, name, apiAddress
-                    )
-            );
-        else if(isModified)
-            executeUpdate(
-                    String.format(
-                            "UPDATE %s SET name = '%s', api_address = '%s' WHERE id = %d",
-                            Database.REALSTATE_USERS_TB, name, apiAddress, id
-                    )
-            );
+        try {
+            Connection connection = Database.getConnection();
+            if(!isSaved) {
+                String SQL = String.format("INSERT INTO %s (name, api_address) VALUES (?, ?)", Database.REALSTATE_USERS_TB);
+                PreparedStatement pstmt = connection.prepareStatement(SQL);
+                pstmt.setString(1, name);
+                pstmt.setString(2, apiAddress);
+                pstmt.executeQuery();
+            }
+            else if(isModified) {
+                String SQL = String.format("UPDATE %s SET name = ?, api_address = ? WHERE id = ?", Database.REALSTATE_USERS_TB);
+                PreparedStatement pstmt = connection.prepareStatement(SQL);
+                pstmt.setString(1, name);
+                pstmt.setString(2, apiAddress);
+                pstmt.setString(3, String.valueOf(id));
+                pstmt.executeQuery();
+            }
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void deleteHouses() {
-        executeUpdate(
-                String.format("DELETE FROM %s WHERE owner = %d", Database.HOUSES_TB, id)
-        );
+        try {
+            Connection connection = Database.getConnection();
+            String SQL = String.format("DELETE FROM %s WHERE owner = ?", Database.HOUSES_TB);
+            PreparedStatement pstmt = connection.prepareStatement(SQL);
+            pstmt.setString(1, String.valueOf(id));
+            pstmt.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private static RealStateUser findByQuery(String query) {
@@ -98,12 +109,14 @@ abstract public class RealStateUser extends User {
         }
     }
 
+    //TODO: make it prepareStatement!
     public static RealStateUser find(String name) {
         return findByQuery(
                 String.format(
                         "SELECT * FROM %s WHERE name = '%s'", Database.REALSTATE_USERS_TB, name));
     }
 
+    //TODO: make it prepareStatement!
     public static RealStateUser find(int id) {
         return findByQuery(String.format("SELECT * FROM %s WHERE id = %d", Database.REALSTATE_USERS_TB, id));
     }

@@ -6,10 +6,7 @@ import KBD.v1.services.JSONService;
 import KBD.v1.services.SecurityService;
 import org.json.JSONObject;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -80,15 +77,12 @@ public class IndividualUser extends User {
         IndividualUser user = null;
         try {
             Connection connection = Database.getConnection();
-            Statement statement = connection.createStatement();
 
-            String hashedPassword = SecurityService.MD5(password);
-            ResultSet resultSet = statement.executeQuery(
-                    String.format(
-                            "SELECT * FROM %s WHERE username = '%s' and password = '%s'",
-                            Database.INDIVIDUAL_USERS_TB, username, hashedPassword
-                    )
-            );
+            String SQL = String.format("SELECT * FROM %s WHERE username = ? and password = ?", Database.INDIVIDUAL_USERS_TB);
+            PreparedStatement pstmt = connection.prepareStatement(SQL);
+            pstmt.setString(1, username);
+            pstmt.setString(2, SecurityService.MD5(password));
+            ResultSet resultSet = pstmt.executeQuery();
 
             if(resultSet.next()) {
                 user = new IndividualUser(
@@ -109,28 +103,40 @@ public class IndividualUser extends User {
     }
 
     public void save() {
-        if(!isSaved)
-            executeUpdate(
-                    String.format(
-                            "INSERT INTO %s (name, phone, balance, username, password) VALUES ('%s', '%s', %d, '%s', '%s')",
-                            Database.INDIVIDUAL_USERS_TB, name, phone, balance, username, password
-                    )
-            );
-        else if(isModified)
-            executeUpdate(
-                    String.format(
-                            "UPDATE %s SET name = '%s', phone = '%s', balance = %d, username = '%s', password = '%s' WHERE id = %d",
-                            Database.INDIVIDUAL_USERS_TB, name, phone, balance, username, password, id
-                    )
-            );
+        try {
+            Connection connection = Database.getConnection();
+            if(!isSaved) {
+                String SQL = String.format("INSERT INTO %s (name, phone, balance, username, password) VALUES (?, ?, ?, ?, ?)", Database.INDIVIDUAL_USERS_TB);
+                PreparedStatement pstmt = connection.prepareStatement(SQL);
+                pstmt.setString(1, name);
+                pstmt.setString(2, phone);
+                pstmt.setString(3, String.valueOf(balance));
+                pstmt.setString(4, username);
+                pstmt.setString(5, password);
+                pstmt.executeQuery();
+            }
+            else if(isModified) {
+                String SQL = String.format("UPDATE %s SET name = ?, phone = ?, balance = ?, username = ?, password = ? WHERE id = ?", Database.INDIVIDUAL_USERS_TB);
+                PreparedStatement pstmt = connection.prepareStatement(SQL);
+                pstmt.setString(1, name);
+                pstmt.setString(2, phone);
+                pstmt.setString(3, String.valueOf(balance));
+                pstmt.setString(4, username);
+                pstmt.setString(5, password);
+                pstmt.setString(6, String.valueOf(id));
+                pstmt.executeQuery();
+            }
 
-        for (House house : paidHouseQueue) {
-            executeUpdate(
-                String.format(
-                        "INSERT INTO %s (user_id, house_id, house_owner) VALUES (%d, '%s', %d)",
-                        Database.PAID_HOUSES_TB, id, house.getId(), house.getOwner()
-                )
-            );
+            for (House house : paidHouseQueue) {
+                String SQL = String.format("INSERT INTO %s (user_id, house_id, house_owner) VALUES (?, ?, ?)", Database.PAID_HOUSES_TB);
+                PreparedStatement pstmt = connection.prepareStatement(SQL);
+                pstmt.setString(1, String.valueOf(id));
+                pstmt.setString(2, house.getId());
+                pstmt.setString(3, String.valueOf(house.getOwner()));
+                pstmt.executeQuery();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -144,14 +150,13 @@ public class IndividualUser extends User {
         boolean paid = false;
         try {
             Connection connection = Database.getConnection();
-            Statement statement = connection.createStatement();
 
-            ResultSet resultSet = statement.executeQuery(
-                    String.format(
-                            "SELECT * FROM %s WHERE user_id = %d and house_id = '%s' and house_owner = %d",
-                            Database.PAID_HOUSES_TB, id, house.getId(), house.getOwner()
-                    )
-            );
+            String SQL = String.format("SELECT * FROM %s WHERE user_id = ? and house_id = ? and house_owner = ?", Database.PAID_HOUSES_TB);
+            PreparedStatement pstmt = connection.prepareStatement(SQL);
+            pstmt.setString(1, String.valueOf(id));
+            pstmt.setString(2, house.getId());
+            pstmt.setString(3, String.valueOf(house.getOwner()));
+            ResultSet resultSet = pstmt.executeQuery();
 
             paid = resultSet.next();
             connection.close();
