@@ -1,6 +1,5 @@
 package KBD.v1.controllers.house;
 
-import KBD.Database;
 import KBD.models.House;
 import KBD.models.enums.BuildingType;
 import KBD.models.enums.DealType;

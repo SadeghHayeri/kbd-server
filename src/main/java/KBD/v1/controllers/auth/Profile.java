@@ -23,7 +23,7 @@ public class Profile extends BaseHttpServlet {
         checkAuth(request);
         IndividualUser user = (IndividualUser) request.getAttribute("user");
 
-        List<String> attributes = Arrays.asList("id", "name", "username", "phone", "balance");
+        List<String> attributes = Arrays.asList("id", "name", "username", "phone", "balance", "isAdmin");
         JSONObject data = user.toJson(attributes);
 
         sendJsonResponse(response, data);

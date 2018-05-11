@@ -19,6 +19,7 @@ public class IndividualUser extends User {
     private String phone;
     private int balance;
     private String password;
+    private boolean isAdmin;
     private ArrayList<House> paidHouseQueue;
 
     public static IndividualUser find(int id) {
@@ -42,7 +43,8 @@ public class IndividualUser extends User {
                         resultSet.getString("username"),
                         resultSet.getString("phone"),
                         resultSet.getInt("balance"),
-                        resultSet.getString("password")
+                        resultSet.getString("password"),
+                        resultSet.getBoolean("is_admin")
                 );
             }
 
@@ -54,24 +56,26 @@ public class IndividualUser extends User {
         }
     }
 
-    private IndividualUser(int id, String name, String username, String phone, int balance, String password) {
+    private IndividualUser(int id, String name, String username, String phone, int balance, String password, boolean isAdmin) {
         super(id, name);
         this.username = username;
         this.phone = phone;
         this.balance = balance;
         this.password = password;
         this.paidHouseQueue = new ArrayList<>();
+        this.isAdmin = isAdmin;
 
         this.isSaved = true;
     }
 
-    public IndividualUser(String name, String username, String phone, int balance, String password) {
+    public IndividualUser(String name, String username, String phone, int balance, String password, boolean isAdmin) {
         super(name);
         this.username = username;
         this.phone = phone;
         this.balance = balance;
         this.password = SecurityService.MD5(password);
         this.paidHouseQueue = new ArrayList<>();
+        this.isAdmin = isAdmin;
     }
 
     public static IndividualUser find(String username, String password) {
@@ -92,7 +96,8 @@ public class IndividualUser extends User {
                         resultSet.getString("username"),
                         resultSet.getString("phone"),
                         resultSet.getInt("balance"),
-                        resultSet.getString("password")
+                        resultSet.getString("password"),
+                        resultSet.getBoolean("is_admin")
                 );
             }
 
@@ -107,8 +112,8 @@ public class IndividualUser extends User {
         if(!isSaved)
             executeUpdate(
                     String.format(
-                            "INSERT INTO %s (name, phone, balance, username, password) VALUES (?, ?, %d, ?, ?)",
-                            Database.INDIVIDUAL_USERS_TB, balance
+                            "INSERT INTO %s (name, phone, balance, username, password, is_admin) VALUES (?, ?, %d, ?, ?, %d)",
+                            Database.INDIVIDUAL_USERS_TB, balance, (isAdmin ? 1 : 0)
                     ),
                     Arrays.asList(name, phone, username, password)
             );
@@ -175,6 +180,7 @@ public class IndividualUser extends User {
         data.put("username", username);
         data.put("phone", phone);
         data.put("balance", balance);
+        data.put("isAdmin", isAdmin);
 
         data = JSONService.keepAllowedKeys(data, keys);
         return data;

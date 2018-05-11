@@ -41,7 +41,8 @@ public class Database {
         ArrayList<IndividualUser> users = new ArrayList<>();
         ArrayList<RealStateUser> realStateUsers = new ArrayList<>();
 
-        users.add(new IndividualUser("بهنام همایون", "admin", "09123456789", 0, "123"));
+        users.add(new IndividualUser("بهنام همایون", "admin", "09123456789", 0, "123", true));
+        users.add(new IndividualUser("کاربر ساده", "simple", "09123456123", 1000, "123", false));
         realStateUsers.add(new System());
         realStateUsers.add(new KhaneBeDoosh("http://139.59.151.5:6664/khaneBeDoosh/v2"));
 
@@ -77,7 +78,8 @@ public class Database {
                             "phone VARCHAR(255)," +
                             "balance INTEGER," +
                             "username VARCHAR(255)," +
-                            "password VARCHAR(255)" +
+                            "password VARCHAR(255)," +
+                            "is_admin BOOLEAN"+
                             ")");
 
             statement.executeUpdate(
