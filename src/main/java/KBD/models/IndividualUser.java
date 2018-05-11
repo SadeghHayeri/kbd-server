@@ -110,33 +110,35 @@ public class IndividualUser extends User {
                 PreparedStatement pstmt = connection.prepareStatement(SQL);
                 pstmt.setString(1, name);
                 pstmt.setString(2, phone);
-                pstmt.setString(3, String.valueOf(balance));
+                pstmt.setInt(3, balance);
                 pstmt.setString(4, username);
                 pstmt.setString(5, password);
-                pstmt.executeQuery();
+                pstmt.executeUpdate();
             }
             else if(isModified) {
                 String SQL = String.format("UPDATE %s SET name = ?, phone = ?, balance = ?, username = ?, password = ? WHERE id = ?", Database.INDIVIDUAL_USERS_TB);
                 PreparedStatement pstmt = connection.prepareStatement(SQL);
                 pstmt.setString(1, name);
                 pstmt.setString(2, phone);
-                pstmt.setString(3, String.valueOf(balance));
+                pstmt.setInt(3, balance);
                 pstmt.setString(4, username);
                 pstmt.setString(5, password);
-                pstmt.setString(6, String.valueOf(id));
-                pstmt.executeQuery();
+                pstmt.setInt(6, id);
+                pstmt.executeUpdate();
             }
 
             for (House house : paidHouseQueue) {
                 String SQL = String.format("INSERT INTO %s (user_id, house_id, house_owner) VALUES (?, ?, ?)", Database.PAID_HOUSES_TB);
                 PreparedStatement pstmt = connection.prepareStatement(SQL);
-                pstmt.setString(1, String.valueOf(id));
+                pstmt.setInt(1, id);
                 pstmt.setString(2, house.getId());
-                pstmt.setString(3, String.valueOf(house.getOwner()));
-                pstmt.executeQuery();
+                pstmt.setInt(3, house.getOwner());
+                pstmt.executeUpdate();
             }
+
+            connection.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            Logger.error(e.getMessage());
         }
     }
 
@@ -153,9 +155,9 @@ public class IndividualUser extends User {
 
             String SQL = String.format("SELECT * FROM %s WHERE user_id = ? and house_id = ? and house_owner = ?", Database.PAID_HOUSES_TB);
             PreparedStatement pstmt = connection.prepareStatement(SQL);
-            pstmt.setString(1, String.valueOf(id));
+            pstmt.setInt(1, id);
             pstmt.setString(2, house.getId());
-            pstmt.setString(3, String.valueOf(house.getOwner()));
+            pstmt.setInt(3, house.getOwner());
             ResultSet resultSet = pstmt.executeQuery();
 
             paid = resultSet.next();

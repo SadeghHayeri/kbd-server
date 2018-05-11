@@ -22,12 +22,14 @@ public class PaidHouse extends BaseModel {
             Connection connection = Database.getConnection();
             String SQL = String.format("INSERT INTO %s VALUES (?, ?, ?)", Database.PAID_HOUSES_TB);
             PreparedStatement pstmt = connection.prepareStatement(SQL);
-            pstmt.setString(1, String.valueOf(userId));
+            pstmt.setInt(1, userId);
             pstmt.setString(2, houseId);
-            pstmt.setString(3, String.valueOf(houseOwner));
-            pstmt.executeQuery();
+            pstmt.setInt(3, houseOwner);
+            pstmt.executeUpdate();
+
+            connection.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            Logger.error(e.getMessage());
         }
     }
 }

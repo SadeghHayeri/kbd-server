@@ -40,70 +40,77 @@ public class House extends BaseModel{
             Connection connection = Database.getConnection();
             if(!isSaved) {
                 if (dealType == DealType.RENTAL) {
-                    String SQL = String.format("INSERT INTO %s (id, owner, building_type, area, address, image_URL, deal_type, base_price, rent_price, phone, description) \" +\n" +
-                            "                                            \"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Database.HOUSES_TB);
-                    PreparedStatement pstmt = connection.prepareStatement(SQL);
-                    pstmt.setString(1, id);
-                    pstmt.setString(2, String.valueOf(owner));
-                    pstmt.setString(3, String.valueOf(buildingType.toInteger()));
-                    pstmt.setString(4, String.valueOf(area));
-                    pstmt.setString(5, address);
-                    pstmt.setString(6, imageURL);
-                    pstmt.setString(7, String.valueOf(DealType.RENTAL.toInteger()));
-                    pstmt.setString(8, String.valueOf(basePrice));
-                    pstmt.setString(9, String.valueOf(rentPrice));
-                    pstmt.setString(10, phone);
-                    pstmt.setString(11, description);
-                    pstmt.executeQuery();
-                } else {
-                    String SQL = String.format("INSERT INTO %s (id, owner, building_type, area, address, image_URL, deal_type, sell_price, phone, description) " +
+                    String SQL = String.format(
+                            "INSERT INTO %s (id, owner, building_type, area, address, image_URL, deal_type, base_price, rent_price, phone, description) " +
                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Database.HOUSES_TB);
                     PreparedStatement pstmt = connection.prepareStatement(SQL);
                     pstmt.setString(1, id);
-                    pstmt.setString(2, String.valueOf(owner));
-                    pstmt.setString(3, String.valueOf(buildingType.toInteger()));
-                    pstmt.setString(4, String.valueOf(area));
+                    pstmt.setInt(2, owner);
+                    pstmt.setInt(3, buildingType.toInteger());
+                    pstmt.setInt(4, area);
                     pstmt.setString(5, address);
                     pstmt.setString(6, imageURL);
-                    pstmt.setString(7, String.valueOf(DealType.BUY.toInteger()));
-                    pstmt.setString(8, String.valueOf(sellPrice));
+                    pstmt.setInt(7, DealType.RENTAL.toInteger());
+                    pstmt.setInt(8, basePrice);
+                    pstmt.setInt(9, rentPrice);
+                    pstmt.setString(10, phone);
+                    pstmt.setString(11, description);
+                    pstmt.executeUpdate();
+                } else {
+                    String SQL = String.format(
+                            "INSERT INTO %s (id, owner, building_type, area, address, image_URL, deal_type, sell_price, phone, description) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Database.HOUSES_TB);
+                    PreparedStatement pstmt = connection.prepareStatement(SQL);
+                    pstmt.setString(1, id);
+                    pstmt.setInt(2, owner);
+                    pstmt.setInt(3, buildingType.toInteger());
+                    pstmt.setInt(4, area);
+                    pstmt.setString(5, address);
+                    pstmt.setString(6, imageURL);
+                    pstmt.setInt(7, DealType.BUY.toInteger());
+                    pstmt.setInt(8, sellPrice);
                     pstmt.setString(9, phone);
                     pstmt.setString(10, description);
-                    pstmt.executeQuery();
+                    pstmt.executeUpdate();
                 }
             } else if(isModified) {
                 if (dealType == DealType.RENTAL) {
-                    String SQL = String.format("UPDATE %s owner = ?, building_type = ?, area = ?, address = ?, image_URL = ?, deal_type = ?, base_price = ?, rent_price = ?, phone = ?, description = ? WHERE id = ?", Database.HOUSES_TB);
+                    String SQL = String.format(
+                            "UPDATE %s owner = ?, building_type = ?, area = ?, address = ?, image_URL = ?, deal_type = ?, " +
+                            "base_price = ?, rent_price = ?, phone = ?, description = ? WHERE id = ?", Database.HOUSES_TB);
                     PreparedStatement pstmt = connection.prepareStatement(SQL);
-                    pstmt.setString(1, String.valueOf(owner));
-                    pstmt.setString(2, String.valueOf(buildingType.toInteger()));
-                    pstmt.setString(3, String.valueOf(area));
+                    pstmt.setInt(1, owner);
+                    pstmt.setInt(2, buildingType.toInteger());
+                    pstmt.setInt(3, area);
                     pstmt.setString(4, address);
                     pstmt.setString(5, imageURL);
-                    pstmt.setString(6, String.valueOf(DealType.RENTAL.toInteger()));
-                    pstmt.setString(7, String.valueOf(basePrice));
-                    pstmt.setString(8, String.valueOf(rentPrice));
+                    pstmt.setInt(6, DealType.RENTAL.toInteger());
+                    pstmt.setInt(7, basePrice);
+                    pstmt.setInt(8, rentPrice);
                     pstmt.setString(9, phone);
                     pstmt.setString(10, description);
-                    pstmt.executeQuery();
+                    pstmt.executeUpdate();
                 } else {
-                    String SQL = String.format("UPDATE %s owner = ?, building_type = ?, area = ?, address = ?, image_URL = ?, deal_type = ?, sell_price = ?, phone = ?, description = ? WHERE id = ?", Database.HOUSES_TB);
+                    String SQL = String.format(
+                            "UPDATE %s owner = ?, building_type = ?, area = ?, address = ?, image_URL = ?, deal_type = ?, " +
+                            "sell_price = ?, phone = ?, description = ? WHERE id = ?", Database.HOUSES_TB);
                     PreparedStatement pstmt = connection.prepareStatement(SQL);
-                    pstmt.setString(1, String.valueOf(owner));
-                    pstmt.setString(2, String.valueOf(buildingType.toInteger()));
-                    pstmt.setString(3, String.valueOf(area));
+                    pstmt.setInt(1, owner);
+                    pstmt.setInt(2, buildingType.toInteger());
+                    pstmt.setInt(3, area);
                     pstmt.setString(4, address);
                     pstmt.setString(5, imageURL);
-                    pstmt.setString(6, String.valueOf(DealType.BUY.toInteger()));
-                    pstmt.setString(7, String.valueOf(sellPrice));
-                    pstmt.setString(9, phone);
-                    pstmt.setString(10, description);
-                    pstmt.setString(11, id);
-                    pstmt.executeQuery();
+                    pstmt.setInt(6, DealType.BUY.toInteger());
+                    pstmt.setInt(7, sellPrice);
+                    pstmt.setString(8, phone);
+                    pstmt.setString(9, description);
+                    pstmt.setString(10, id);
+                    pstmt.executeUpdate();
                 }
             }
+            connection.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            Logger.error(e.getMessage());
         }
     }
 
@@ -113,7 +120,7 @@ public class House extends BaseModel{
 
             String SQL = String.format("SELECT * FROM %s WHERE owner = ? and id = ?", Database.PAID_HOUSES_TB);
             PreparedStatement pstmt = connection.prepareStatement(SQL);
-            pstmt.setString(1, String.valueOf(RealStateUser.find(houseOwner.toString()).getId()));
+            pstmt.setInt(1, RealStateUser.find(houseOwner.toString()).getId());
             pstmt.setString(2, houseId);
             ResultSet resultSet = pstmt.executeQuery();
 
@@ -138,13 +145,13 @@ public class House extends BaseModel{
             if (dealType == DealType.RENTAL)
                 price = "base_price";
 
-            String SQL = String.format("SELECT * FROM %s WHERE area >= ? and ? <= ? and deal_type = ? and building_type = ?", Database.HOUSES_TB);
+            String SQL = String.format("SELECT * FROM %s WHERE area >= ? and %s <= ? and deal_type = ? and building_type = ?",
+                    Database.HOUSES_TB, price);
             PreparedStatement pstmt = connection.prepareStatement(SQL);
-            pstmt.setString(1, String.valueOf(minimumArea));
-            pstmt.setString(2, price);
-            pstmt.setString(3, String.valueOf(maximumPrice));
-            pstmt.setString(4, String.valueOf(dealType.toInteger()));
-            pstmt.setString(5, String.valueOf(buildingType.toInteger()));
+            pstmt.setInt(1, minimumArea);
+            pstmt.setInt(2, maximumPrice);
+            pstmt.setInt(3, dealType.toInteger());
+            pstmt.setInt(4, buildingType.toInteger());
             ResultSet resultSet = pstmt.executeQuery();
 
             while (resultSet.next()) {

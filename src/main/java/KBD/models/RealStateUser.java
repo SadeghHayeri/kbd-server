@@ -6,7 +6,6 @@ import KBD.models.enums.HouseOwner;
 import KBD.models.realState.KhaneBeDoosh;
 import KBD.models.realState.System;
 import KBD.v1.Exceptions.NotFoundException;
-import KBD.v1.services.SecurityService;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -59,19 +58,19 @@ abstract public class RealStateUser extends User {
                 PreparedStatement pstmt = connection.prepareStatement(SQL);
                 pstmt.setString(1, name);
                 pstmt.setString(2, apiAddress);
-                pstmt.executeQuery();
+                pstmt.executeUpdate();
             }
             else if(isModified) {
                 String SQL = String.format("UPDATE %s SET name = ?, api_address = ? WHERE id = ?", Database.REALSTATE_USERS_TB);
                 PreparedStatement pstmt = connection.prepareStatement(SQL);
                 pstmt.setString(1, name);
                 pstmt.setString(2, apiAddress);
-                pstmt.setString(3, String.valueOf(id));
-                pstmt.executeQuery();
+                pstmt.setInt(3, id);
+                pstmt.executeUpdate();
             }
             connection.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            Logger.error(e.getMessage());
         }
     }
 
@@ -80,10 +79,10 @@ abstract public class RealStateUser extends User {
             Connection connection = Database.getConnection();
             String SQL = String.format("DELETE FROM %s WHERE owner = ?", Database.HOUSES_TB);
             PreparedStatement pstmt = connection.prepareStatement(SQL);
-            pstmt.setString(1, String.valueOf(id));
-            pstmt.executeQuery();
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            Logger.error(e.getMessage());
         }
     }
 
@@ -111,9 +110,7 @@ abstract public class RealStateUser extends User {
 
     //TODO: make it prepareStatement!
     public static RealStateUser find(String name) {
-        return findByQuery(
-                String.format(
-                        "SELECT * FROM %s WHERE name = '%s'", Database.REALSTATE_USERS_TB, name));
+        return findByQuery(String.format("SELECT * FROM %s WHERE name = '%s'", Database.REALSTATE_USERS_TB, name));
     }
 
     //TODO: make it prepareStatement!
