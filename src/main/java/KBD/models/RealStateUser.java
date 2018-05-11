@@ -14,9 +14,7 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 /**
  * Created by sadegh on 2/12/18.
@@ -51,39 +49,20 @@ abstract public class RealStateUser extends User {
     }
 
     public void save() {
-        try {
-            Connection connection = Database.getConnection();
-            if(!isSaved) {
-                String SQL = String.format("INSERT INTO %s (name, api_address) VALUES (?, ?)", Database.REALSTATE_USERS_TB);
-                PreparedStatement pstmt = connection.prepareStatement(SQL);
-                pstmt.setString(1, name);
-                pstmt.setString(2, apiAddress);
-                pstmt.executeUpdate();
-            }
-            else if(isModified) {
-                String SQL = String.format("UPDATE %s SET name = ?, api_address = ? WHERE id = ?", Database.REALSTATE_USERS_TB);
-                PreparedStatement pstmt = connection.prepareStatement(SQL);
-                pstmt.setString(1, name);
-                pstmt.setString(2, apiAddress);
-                pstmt.setInt(3, id);
-                pstmt.executeUpdate();
-            }
-            connection.close();
-        } catch (SQLException e) {
-            Logger.error(e.getMessage());
-        }
+        if(!isSaved)
+            executeUpdate(
+                    String.format("INSERT INTO %s (name, api_address) VALUES (?, ?)", Database.REALSTATE_USERS_TB),
+                    Arrays.asList(name, apiAddress)
+            );
+        else if(isModified)
+            executeUpdate(
+                    String.format("UPDATE %s SET name = ?, api_address = ? WHERE id = %d", Database.REALSTATE_USERS_TB, id),
+                    Arrays.asList(name, apiAddress)
+            );
     }
 
     public void deleteHouses() {
-        try {
-            Connection connection = Database.getConnection();
-            String SQL = String.format("DELETE FROM %s WHERE owner = ?", Database.HOUSES_TB);
-            PreparedStatement pstmt = connection.prepareStatement(SQL);
-            pstmt.setInt(1, id);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            Logger.error(e.getMessage());
-        }
+        executeUpdate(String.format("DELETE FROM %s WHERE owner = %d", Database.HOUSES_TB, id));
     }
 
     private static RealStateUser findByQuery(String query) {

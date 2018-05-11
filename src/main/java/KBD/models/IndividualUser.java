@@ -7,6 +7,7 @@ import KBD.v1.services.SecurityService;
 import org.json.JSONObject;
 
 import java.sql.*;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -103,43 +104,30 @@ public class IndividualUser extends User {
     }
 
     public void save() {
-        try {
-            Connection connection = Database.getConnection();
-            if(!isSaved) {
-                String SQL = String.format("INSERT INTO %s (name, phone, balance, username, password) VALUES (?, ?, ?, ?, ?)", Database.INDIVIDUAL_USERS_TB);
-                PreparedStatement pstmt = connection.prepareStatement(SQL);
-                pstmt.setString(1, name);
-                pstmt.setString(2, phone);
-                pstmt.setInt(3, balance);
-                pstmt.setString(4, username);
-                pstmt.setString(5, password);
-                pstmt.executeUpdate();
-            }
-            else if(isModified) {
-                String SQL = String.format("UPDATE %s SET name = ?, phone = ?, balance = ?, username = ?, password = ? WHERE id = ?", Database.INDIVIDUAL_USERS_TB);
-                PreparedStatement pstmt = connection.prepareStatement(SQL);
-                pstmt.setString(1, name);
-                pstmt.setString(2, phone);
-                pstmt.setInt(3, balance);
-                pstmt.setString(4, username);
-                pstmt.setString(5, password);
-                pstmt.setInt(6, id);
-                pstmt.executeUpdate();
-            }
-
-            for (House house : paidHouseQueue) {
-                String SQL = String.format("INSERT INTO %s (user_id, house_id, house_owner) VALUES (?, ?, ?)", Database.PAID_HOUSES_TB);
-                PreparedStatement pstmt = connection.prepareStatement(SQL);
-                pstmt.setInt(1, id);
-                pstmt.setString(2, house.getId());
-                pstmt.setInt(3, house.getOwner());
-                pstmt.executeUpdate();
-            }
-
-            connection.close();
-        } catch (SQLException e) {
-            Logger.error(e.getMessage());
-        }
+        if(!isSaved)
+            executeUpdate(
+                    String.format(
+                            "INSERT INTO %s (name, phone, balance, username, password) VALUES (?, ?, %d, ?, ?)",
+                            Database.INDIVIDUAL_USERS_TB, balance
+                    ),
+                    Arrays.asList(name, phone, username, password)
+            );
+        else if(isModified)
+            executeUpdate(
+                    String.format(
+                            "UPDATE %s SET name = ?, phone = ?, balance = %d, username = ?, password = ? WHERE id = %d",
+                            Database.INDIVIDUAL_USERS_TB, balance, id
+                    ),
+                    Arrays.asList(name, phone, username, password)
+            );
+        for (House house : paidHouseQueue)
+            executeUpdate(
+                    String.format(
+                            "INSERT INTO %s (user_id, house_id, house_owner) VALUES (%d, ?, %d)",
+                            Database.PAID_HOUSES_TB, id, house.getOwner()
+                    ),
+                    Arrays.asList(house.getId())
+            );
     }
 
     public void addBalance(int balanceValue) {

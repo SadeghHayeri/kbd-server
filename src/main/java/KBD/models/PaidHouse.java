@@ -6,6 +6,7 @@ import KBD.Database;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Arrays;
 
 public class PaidHouse extends BaseModel {
     private int userId;
@@ -18,18 +19,9 @@ public class PaidHouse extends BaseModel {
     }
 
     public void save() {
-        try {
-            Connection connection = Database.getConnection();
-            String SQL = String.format("INSERT INTO %s VALUES (?, ?, ?)", Database.PAID_HOUSES_TB);
-            PreparedStatement pstmt = connection.prepareStatement(SQL);
-            pstmt.setInt(1, userId);
-            pstmt.setString(2, houseId);
-            pstmt.setInt(3, houseOwner);
-            pstmt.executeUpdate();
-
-            connection.close();
-        } catch (SQLException e) {
-            Logger.error(e.getMessage());
-        }
+        executeUpdate(
+                String.format("INSERT INTO %s VALUES (%d, ?, %d)", Database.PAID_HOUSES_TB, userId, houseOwner),
+                Arrays.asList(houseId)
+        );
     }
 }
