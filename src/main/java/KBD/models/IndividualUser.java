@@ -7,9 +7,7 @@ import KBD.v1.services.SecurityService;
 import org.json.JSONObject;
 
 import java.sql.*;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * Created by sadegh on 2/12/18.
@@ -22,39 +20,10 @@ public class IndividualUser extends User {
     private boolean isAdmin;
     private ArrayList<House> paidHouseQueue;
 
-    public static IndividualUser find(int id) {
-        try {
-            Connection connection = Database.getConnection();
-            Statement statement = connection.createStatement();
-
-            IndividualUser individualUser = null;
-
-            ResultSet resultSet = statement.executeQuery(
-                    String.format(
-                            "SELECT * FROM %s WHERE id = %d",
-                            Database.INDIVIDUAL_USERS_TB, id
-                    )
-            );
-
-            if (resultSet != null && resultSet.next()) {
-                individualUser = new IndividualUser(
-                        resultSet.getInt("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("username"),
-                        resultSet.getString("phone"),
-                        resultSet.getInt("balance"),
-                        resultSet.getString("password"),
-                        resultSet.getBoolean("is_admin")
-                );
-            }
-
-            connection.close();
-            return individualUser;
-        } catch (SQLException e) {
-            Logger.error(e.getMessage());
-            return null;
-        }
+    public boolean isAdmin() {
+        return isAdmin;
     }
+
 
     private IndividualUser(int id, String name, String username, String phone, int balance, String password, boolean isAdmin) {
         super(id, name);
@@ -78,28 +47,59 @@ public class IndividualUser extends User {
         this.isAdmin = isAdmin;
     }
 
+    public static IndividualUser make(ResultSet resultSet) {
+        IndividualUser user = null;
+        try {
+            user = new IndividualUser(
+                    resultSet.getInt("id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("username"),
+                    resultSet.getString("phone"),
+                    resultSet.getInt("balance"),
+                    resultSet.getString("password"),
+                    resultSet.getBoolean("is_admin")
+            );
+        } catch (SQLException e) {
+            Logger.error(e.getMessage());
+        }
+        return user;
+    }
+
+    public static IndividualUser find(int id) {
+        IndividualUser individualUser = null;
+        try {
+            Connection connection = Database.getConnection();
+            Statement statement = connection.createStatement();
+
+            ResultSet resultSet = statement.executeQuery(
+                    String.format("SELECT * FROM %s WHERE id = %d", Database.INDIVIDUAL_USERS_TB, id)
+            );
+
+            if (resultSet != null && resultSet.next())
+                individualUser = make(resultSet);
+
+            connection.close();
+        } catch (SQLException e) {
+            Logger.error(e.getMessage());
+        }
+        return individualUser;
+    }
+
     public static IndividualUser find(String username, String password) {
         IndividualUser user = null;
         try {
             Connection connection = Database.getConnection();
 
-            String SQL = String.format("SELECT * FROM %s WHERE username = ? and password = ?", Database.INDIVIDUAL_USERS_TB);
+            String SQL = String.format(
+                    "SELECT * FROM %s WHERE username = ? and password = ?", Database.INDIVIDUAL_USERS_TB
+            );
             PreparedStatement pstmt = connection.prepareStatement(SQL);
             pstmt.setString(1, username);
             pstmt.setString(2, SecurityService.MD5(password));
             ResultSet resultSet = pstmt.executeQuery();
 
-            if(resultSet.next()) {
-                user = new IndividualUser(
-                        resultSet.getInt("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("username"),
-                        resultSet.getString("phone"),
-                        resultSet.getInt("balance"),
-                        resultSet.getString("password"),
-                        resultSet.getBoolean("is_admin")
-                );
-            }
+            if(resultSet.next())
+                user = make(resultSet);
 
             connection.close();
         } catch (SQLException e) {
@@ -146,7 +146,9 @@ public class IndividualUser extends User {
         try {
             Connection connection = Database.getConnection();
 
-            String SQL = String.format("SELECT * FROM %s WHERE user_id = ? and house_id = ? and house_owner = ?", Database.PAID_HOUSES_TB);
+            String SQL = String.format(
+                    "SELECT * FROM %s WHERE user_id = ? and house_id = ? and house_owner = ?", Database.PAID_HOUSES_TB
+            );
             PreparedStatement pstmt = connection.prepareStatement(SQL);
             pstmt.setInt(1, id);
             pstmt.setString(2, house.getId());
