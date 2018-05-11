@@ -1,11 +1,8 @@
 package KBD;
 
-import KBD.models.Logger;
+import KBD.models.*;
 import KBD.models.realState.System;
 import KBD.v1.Exceptions.NotFoundException;
-import KBD.models.House;
-import KBD.models.IndividualUser;
-import KBD.models.RealStateUser;
 import KBD.models.enums.BuildingType;
 import KBD.models.enums.HouseOwner;
 import KBD.models.realState.KhaneBeDoosh;
@@ -40,9 +37,12 @@ public class Database {
         ArrayList<House> houses = new ArrayList<>();
         ArrayList<IndividualUser> users = new ArrayList<>();
         ArrayList<RealStateUser> realStateUsers = new ArrayList<>();
+        ArrayList<PaidHouse> paidHouses = new ArrayList<>();
 
         users.add(new IndividualUser("بهنام همایون", "admin", "09123456789", 0, "123", true));
         users.add(new IndividualUser("کاربر ساده", "simple", "09123456123", 1000, "123", false));
+        users.add(new IndividualUser("کاربر خیلی ساده", "so-simple", "09123456456", 1000, "456", false));
+
         realStateUsers.add(new System());
         realStateUsers.add(new KhaneBeDoosh("http://139.59.151.5:6664/khaneBeDoosh/v2"));
 
@@ -56,6 +56,21 @@ public class Database {
         houses.add(new House(BuildingType.APARTMENT, 1000, "khoone", 2500, 200, "09333564933", "nadare"));
         houses.add(new House(BuildingType.VILLA, 50, "salam", 1550, 150, "09333564934", "nadare"));
 
+        paidHouses.add(new PaidHouse(1, 1, houses.get(0).getId()));
+        paidHouses.add(new PaidHouse(1, 1, houses.get(1).getId()));
+        paidHouses.add(new PaidHouse(2, 1, houses.get(0).getId()));
+        paidHouses.add(new PaidHouse(2, 1, houses.get(1).getId()));
+        paidHouses.add(new PaidHouse(2, 1, houses.get(2).getId()));
+        paidHouses.add(new PaidHouse(2, 1, houses.get(3).getId()));
+        paidHouses.add(new PaidHouse(2, 1, houses.get(4).getId()));
+        paidHouses.add(new PaidHouse(2, 1, houses.get(5).getId()));
+        paidHouses.add(new PaidHouse(3, 1, houses.get(2).getId()));
+        paidHouses.add(new PaidHouse(3, 1, houses.get(3).getId()));
+        paidHouses.add(new PaidHouse(3, 1, houses.get(4).getId()));
+        paidHouses.add(new PaidHouse(3, 1, houses.get(5).getId()));
+        paidHouses.add(new PaidHouse(3, 1, houses.get(6).getId()));
+        paidHouses.add(new PaidHouse(3, 1, houses.get(7).getId()));
+
         for (RealStateUser realStateUser: realStateUsers)
             realStateUser.save();
 
@@ -64,6 +79,9 @@ public class Database {
 
         for (House house: houses)
             house.save();
+
+        for (PaidHouse paidHouse: paidHouses)
+            paidHouse.save();
     }
 
     public static void createTables() {

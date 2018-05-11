@@ -28,14 +28,21 @@ public class Report extends BaseHttpServlet {
         checkAuth(request);
 
         IndividualUser user = (IndividualUser) request.getAttribute("user");
+        int page = 0;
+        if (request.getParameter("page") != null)
+            page = Integer.parseInt(request.getParameter("page"));
+
+        int size = 20;
+        if (request.getParameter("size") != null)
+            size = Math.min(Integer.parseInt(request.getParameter("size")), size);
 
         if (user.isAdmin())
-            sendJsonResponse(response, listAllInfo());
+            sendJsonResponse(response, listAllInfo(page, size));
         else
-            sendJsonResponse(response, listUserInfo(user));
+            sendJsonResponse(response, listUserInfo(user, page, size));
     }
 
-    private JSONObject listAllInfo() {
+    private JSONObject listAllInfo(int page, int size) {
         JSONObject users = new JSONObject();
         try {
             Connection connection = Database.getConnection();
@@ -46,7 +53,8 @@ public class Report extends BaseHttpServlet {
                             "SELECT * FROM %s U " +
                                     "LEFT JOIN %s PH ON U.id = PH.user_id " +
                                     "LEFT JOIN %s R ON R.id = PH.house_owner " +
-                                    "ORDER BY U.id",
+                                    "ORDER BY U.id " +
+                                    ((page != 0) ? ("LIMIT " + size) + " OFFSET " + (page-1)*size: ""),
                             Database.INDIVIDUAL_USERS_TB, Database.PAID_HOUSES_TB, Database.REALSTATE_USERS_TB
                     )
             );
@@ -70,7 +78,7 @@ public class Report extends BaseHttpServlet {
         return users;
     }
 
-    private JSONArray listUserInfo(IndividualUser user) {
+    private JSONArray listUserInfo(IndividualUser user, int page, int size) {
         JSONArray paidHouses = new JSONArray();
         try {
             Connection connection = Database.getConnection();
@@ -80,7 +88,8 @@ public class Report extends BaseHttpServlet {
                     String.format(
                             "SELECT * FROM %s PH " +
                             "INNER JOIN %s R ON R.id = PH.house_owner " +
-                            "WHERE PH.user_id = %d ",
+                            "WHERE PH.user_id = %d " +
+                            ((page != 0) ? ("LIMIT " + size) + " OFFSET " + (page-1)*size: ""),
                             Database.PAID_HOUSES_TB, Database.REALSTATE_USERS_TB, user.getId()
                     )
             );

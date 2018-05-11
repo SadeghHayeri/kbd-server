@@ -13,7 +13,8 @@ public class PaidHouse extends BaseModel {
     public int houseOwner;
     public String houseId;
 
-    public PaidHouse(int houseOwner, String houseId) {
+    public PaidHouse(int userId, int houseOwner, String houseId) {
+        this.userId = userId;
         this.houseOwner = houseOwner;
         this.houseId = houseId;
     }
