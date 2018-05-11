@@ -2,6 +2,7 @@ package KBD.v1.controllers;
 
 import KBD.v1.Exceptions.FieldNotFoundException;
 import KBD.v1.Exceptions.NoAuthenticationException;
+import KBD.v1.services.XSSPreventionService;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -22,7 +23,8 @@ public class BaseHttpServlet extends HttpServlet {
 
     protected JSONObject parseJsonData(HttpServletRequest request) throws IOException {
         String jsonString = IOUtils.toString(request.getInputStream());
-        return new JSONObject(jsonString);
+        JSONObject jsonObject = new JSONObject(jsonString);
+        return XSSPreventionService.secure(jsonObject);
     }
 
     protected void jsonValidation(JSONObject jsonData, List<String> fields) throws IOException, FileNotFoundException {
