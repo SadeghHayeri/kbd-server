@@ -231,24 +231,10 @@ public class House extends BaseModel{
         return id;
     }
 
-    public BuildingType getBuildingType() {
-        return buildingType;
-    }
-
-    public int getArea() {
-        return area;
-    }
-
-    public DealType getDealType() {
-        return dealType;
-    }
-
-    public int getSellPrice() {
-        return sellPrice;
-    }
-
     public String getHiddenPhone() {
-        return phone.substring(0, 2) + "*****" + phone.substring(7);
+        if (phone.length() > 5)
+            return phone.substring(0, 2) + "*****" + phone.substring(phone.length()-3);
+        return "*****";
     }
 
     public JSONObject toJson (List<String> keys) {
